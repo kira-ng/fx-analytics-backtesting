@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMC Roadmap — Lộ trình chi tiết Smart Money Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-2: #0f1524;
+    --panel: #131a2c;
+    --line: #1f2940;
+    --text: #e8ecf5;
+    --text-dim: #8a93a8;
+    --text-faint: #4a5169;
+    --bull: #00d4a8;
+    --bear: #ff3b6b;
+    --accent: #ffb547;
+    --gold: #d4af37;
+    --blue: #4a9eff;
+    --purple: #a78bfa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter Tight', -apple-system, sans-serif;
+    line-height: 1.65;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(74, 158, 255, 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 90% 90%, rgba(0, 212, 168, 0.04), transparent);
+  }
+
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* === HEADER === */
+  header.hero {
+    padding: 100px 0 80px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+
+  .ticker-tape {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .ticker-tape span { display: inline-flex; align-items: center; gap: 8px; }
+  .ticker-tape .up { color: var(--bull); }
+  .ticker-tape .down { color: var(--bear); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .dot.live { background: var(--bull); box-shadow: 0 0 12px var(--bull); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+  }
+  h1 .accent {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 19px;
+    color: var(--text-dim);
+    max-width: 680px;
+    margin-bottom: 48px;
+  }
+
+  .meta-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-top: 48px;
+  }
+  .meta-bar > div {
+    background: var(--bg);
+    padding: 20px 24px;
+  }
+  .meta-bar .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .meta-bar .value {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 600;
+  }
+  .meta-bar .value.gold { color: var(--accent); }
+
+  /* === SECTIONS === */
+  section.phase {
+    padding: 100px 0;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+
+  .phase-header {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 40px;
+    align-items: start;
+    margin-bottom: 64px;
+  }
+
+  .phase-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    border-top: 2px solid var(--accent);
+    padding-top: 12px;
+  }
+  .phase-num .duration {
+    display: block;
+    color: var(--text-faint);
+    font-size: 11px;
+    margin-top: 6px;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  h2 em { color: var(--accent); font-style: italic; font-weight: 400; }
+
+  .phase-desc {
+    color: var(--text-dim);
+    font-size: 17px;
+    max-width: 760px;
+  }
+
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 48px 0 16px;
+    letter-spacing: -0.01em;
+  }
+  h3::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background: var(--accent);
+    vertical-align: middle;
+    margin-right: 16px;
+    transform: translateY(-4px);
+  }
+
+  h4 {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 24px 0 12px;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  p { margin-bottom: 14px; color: var(--text-dim); }
+  p strong { color: var(--text); font-weight: 600; }
+
+  ul.checklist {
+    list-style: none;
+    margin: 16px 0 24px;
+  }
+  ul.checklist li {
+    padding: 10px 0 10px 32px;
+    border-bottom: 1px dashed var(--line);
+    color: var(--text-dim);
+    position: relative;
+    font-size: 15px;
+  }
+  ul.checklist li::before {
+    content: '◆';
+    position: absolute;
+    left: 4px;
+    color: var(--accent);
+    font-size: 10px;
+    top: 14px;
+  }
+  ul.checklist li strong { color: var(--text); }
+
+  /* === CHART CARDS === */
+  .chart-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    margin: 32px 0;
+    overflow: hidden;
+  }
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-2);
+  }
+  .chart-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .chart-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+  }
+  .chart-body {
+    padding: 32px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 280px;
+    background:
+      linear-gradient(var(--panel), var(--panel)),
+      repeating-linear-gradient(0deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 40px),
+      repeating-linear-gradient(90deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 40px);
+    background-blend-mode: normal;
+    background:
+      repeating-linear-gradient(0deg, transparent 0, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px),
+      repeating-linear-gradient(90deg, transparent 0, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px),
+      var(--panel);
+  }
+  .chart-body svg { width: 100%; height: auto; max-width: 100%; }
+  .chart-caption {
+    padding: 14px 24px;
+    border-top: 1px solid var(--line);
+    background: var(--bg-2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* === GRID === */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 32px 0;
+  }
+  @media (max-width: 768px) {
+    .two-col { grid-template-columns: 1fr; }
+    .phase-header { grid-template-columns: 1fr; gap: 16px; }
+    .meta-bar { grid-template-columns: repeat(2, 1fr); }
+    .container { padding: 0 20px; }
+  }
+
+  .info-box {
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+  .info-box.bull { border-left-color: var(--bull); }
+  .info-box.bear { border-left-color: var(--bear); }
+  .info-box .ib-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .info-box.bull .ib-label { color: var(--bull); }
+  .info-box.bear .ib-label { color: var(--bear); }
+
+  /* === TABLE === */
+  table.def-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+  table.def-table th, table.def-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  table.def-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--line);
+  }
+  table.def-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-weight: 700;
+    width: 140px;
+  }
+  table.def-table td { color: var(--text-dim); }
+
+  /* === FOOTER === */
+  footer {
+    padding: 80px 0 60px;
+    text-align: center;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+  }
+  footer .quote {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 24px;
+    color: var(--text-dim);
+    max-width: 600px;
+    margin: 0 auto 32px;
+    line-height: 1.4;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* SVG common */
+  .candle-bull { fill: var(--bull); stroke: var(--bull); }
+  .candle-bear { fill: var(--bear); stroke: var(--bear); }
+  .level-line { stroke-dasharray: 4 3; }
+  .label-mono { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; }
+
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 32px;
+    margin: 48px 0;
+  }
+  .toc-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text-faint);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  .toc ol { list-style: none; counter-reset: toc; }
+  .toc li {
+    counter-increment: toc;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 20px;
+    align-items: baseline;
+  }
+  .toc li:last-child { border-bottom: none; }
+  .toc li::before {
+    content: '0' counter(toc);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+  }
+  .toc li a {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .toc li a:hover { color: var(--accent); }
+  .toc li .dur {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+  }
+
+</style>
+</head>
+<body>
+<div class="grid-overlay"></div>
+
+<header class="hero">
+  <div class="container">
+    <div class="ticker-tape">
+      <span><span class="dot live"></span>LIVE SESSION</span>
+      <span>EUR/USD <span class="up">▲ 1.0847</span></span>
+      <span>GBP/USD <span class="down">▼ 1.2634</span></span>
+      <span>XAU/USD <span class="up">▲ 2,387.40</span></span>
+      <span>BTC/USD <span class="up">▲ 67,420</span></span>
+    </div>
+
+    <h1>Smart Money<br><span class="accent">Concepts</span><br>Roadmap.</h1>
+    <p class="hero-sub">
+      Lộ trình chi tiết 6 giai đoạn — từ nến Nhật cơ bản đến hệ thống giao dịch
+      hoàn chỉnh theo dấu chân của các tổ chức lớn. Có hình minh họa cho mọi khái niệm.
+    </p>
+
+    <div class="meta-bar">
+      <div>
+        <div class="label">Total Duration</div>
+        <div class="value gold">12–18<span style="font-size:14px; color:var(--text-faint); margin-left:4px;">tháng</span></div>
+      </div>
+      <div>
+        <div class="label">Phases</div>
+        <div class="value">06</div>
+      </div>
+      <div>
+        <div class="label">Diagrams</div>
+        <div class="value">15+</div>
+      </div>
+      <div>
+        <div class="label">Level</div>
+        <div class="value gold">Pro</div>
+      </div>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">— Table of Contents</div>
+      <ol>
+        <li><a href="#g1">Nền tảng cơ bản</a><span class="dur">2–4 TUẦN</span></li>
+        <li><a href="#g2">Cấu trúc thị trường</a><span class="dur">3–4 TUẦN</span></li>
+        <li><a href="#g3">Khái niệm cốt lõi SMC</a><span class="dur">4–6 TUẦN</span></li>
+        <li><a href="#g4">ICT Concepts nâng cao</a><span class="dur">6–8 TUẦN</span></li>
+        <li><a href="#g5">Xây dựng hệ thống</a><span class="dur">4–6 TUẦN</span></li>
+        <li><a href="#g6">Thực hành &amp; Backtest</a><span class="dur">LIÊN TỤC</span></li>
+      </ol>
+    </div>
+  </div>
+</header>
+
+<!-- ============ PHASE 1 ============ -->
+<section class="phase" id="g1">
+  <div class="container">
+    <div class="phase-header">
+      <div class="phase-num">PHASE 01<span class="duration">2–4 TUẦN</span></div>
+      <div>
+        <h2>Nền tảng <em>cơ bản</em></h2>
+        <p class="phase-desc">
+          Trước khi nói đến "smart money", bạn phải nói được ngôn ngữ của thị trường.
+          Đây là giai đoạn xây nền — bỏ qua sẽ trả giá rất đắt ở các giai đoạn sau.
+        </p>
+      </div>
+    </div>
+
+    <h3>1.1 Hiểu thị trường tài chính</h3>
+    <p>
+      SMC có thể áp dụng cho Forex, vàng, chỉ số, crypto, cổ phiếu — nhưng mỗi thị trường
+      có đặc điểm thanh khoản và phiên giao dịch khác nhau. Bạn cần biết mình giao dịch gì,
+      khi nào thị trường có thanh khoản tốt nhất, và ai là người đẩy giá.
+    </p>
+    <ul class="checklist">
+      <li><strong>Phiên giao dịch:</strong> Á (Tokyo), Âu (London), Mỹ (New York) và các killzone</li>
+      <li><strong>Cặp tiền tệ:</strong> Major, Minor, Exotic — chọn cặp có spread thấp và thanh khoản cao</li>
+      <li><strong>Khái niệm cơ bản:</strong> Pip, lot, leverage, margin, spread, swap</li>
+      <li><strong>Tin tức cơ bản:</strong> NFP, FOMC, CPI — biết để tránh chứ không cần phân tích sâu</li>
+    </ul>
+
+    <h3>1.2 Đọc nến Nhật &amp; cấu trúc cơ bản</h3>
+    <p>
+      Mỗi cây nến kể một câu chuyện về cuộc chiến giữa phe mua và phe bán. SMC dùng nến
+      như "đơn vị thông tin" để đọc hành động giá. Hãy thuộc lòng giải phẫu một cây nến.
+    </p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Candlestick Anatomy</span>
+        <span class="chart-tag">FIG. 1.1 — STRUCTURE</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+          <!-- Bullish candle -->
+          <g transform="translate(140,40)">
+            <line x1="40" y1="0" x2="40" y2="200" stroke="#00d4a8" stroke-width="1.5"/>
+            <rect x="20" y="40" width="40" height="120" fill="#00d4a8"/>
+            <text x="40" y="-12" text-anchor="middle" fill="#00d4a8" class="label-mono" font-weight="700">BULLISH</text>
+            <!-- annotations -->
+            <line x1="60" y1="0" x2="120" y2="0" stroke="#8a93a8" stroke-width="0.5"/>
+            <text x="125" y="4" fill="#8a93a8" class="label-mono">HIGH (râu trên)</text>
+            <line x1="60" y1="40" x2="120" y2="40" stroke="#8a93a8" stroke-width="0.5"/>
+            <text x="125" y="44" fill="#e8ecf5" class="label-mono">CLOSE</text>
+            <line x1="60" y1="160" x2="120" y2="160" stroke="#8a93a8" stroke-width="0.5"/>
+            <text x="125" y="164" fill="#e8ecf5" class="label-mono">OPEN</text>
+            <line x1="60" y1="200" x2="120" y2="200" stroke="#8a93a8" stroke-width="0.5"/>
+            <text x="125" y="204" fill="#8a93a8" class="label-mono">LOW (râu dưới)</text>
+          </g>
+
+          <!-- Bearish candle -->
+          <g transform="translate(380,40)">
+            <line x1="40" y1="0" x2="40" y2="200" stroke="#ff3b6b" stroke-width="1.5"/>
+            <rect x="20" y="60" width="40" height="100" fill="#ff3b6b"/>
+            <text x="40" y="-12" text-anchor="middle" fill="#ff3b6b" class="label-mono" font-weight="700">BEARISH</text>
+            <line x1="0" y1="0" x2="-40" y2="0" stroke="#8a93a8" stroke-width="0.5"/>
+            <text x="-45" y="4" text-anchor="end" fill="#8a93a8" class="label-mono">HIGH</text>
+            <line x1="20" y1="60" x2="-40" y2="60" stroke="#8a93a8" stroke-width="0.5"/>
+            <text x="-45" y="64" text-anchor="end" fill="#e8ecf5" class="label-mono">OPEN</text>
+            <line x1="20" y1="160" x2="-40" y2="160" stroke="#8a93a8" stroke-width="0.5"/>
+            <text x="-45" y="164" text-anchor="end" fill="#e8ecf5" class="label-mono">CLOSE</text>
+            <line x1="0" y1="200" x2="-40" y2="200" stroke="#8a93a8" stroke-width="0.5"/>
+            <text x="-45" y="204" text-anchor="end" fill="#8a93a8" class="label-mono">LOW</text>
+          </g>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 1.1 — Cấu trúc nến: thân nến thể hiện open/close, râu nến thể hiện high/low của phiên</div>
+    </div>
+
+    <h4>Mẫu nến quan trọng cần thuộc</h4>
+    <table class="def-table">
+      <tr><th>Pattern</th><th>Ý nghĩa</th></tr>
+      <tr><td>PIN BAR</td><td>Râu dài, thân nhỏ — từ chối giá tại một vùng quan trọng</td></tr>
+      <tr><td>ENGULFING</td><td>Nến nhấn chìm cây trước — đảo chiều mạnh khi xuất hiện ở key level</td></tr>
+      <tr><td>DOJI</td><td>Open ≈ Close — sự do dự, thường báo hiệu đảo chiều</td></tr>
+      <tr><td>MARUBOZU</td><td>Nến đặc, không râu — momentum cực mạnh</td></tr>
+      <tr><td>INSIDE BAR</td><td>Nằm trong range nến mẹ — tích lũy trước breakout</td></tr>
+    </table>
+
+    <h3>1.3 Multi-Timeframe Analysis</h3>
+    <p>
+      SMC <strong>luôn</strong> phân tích từ khung lớn xuống khung nhỏ. Khung lớn xác định
+      xu hướng và vùng giao dịch, khung nhỏ tìm điểm vào lệnh chính xác. Quy tắc vàng:
+      <strong>khung lớn quyết định bias, khung nhỏ quyết định entry</strong>.
+    </p>
+
+    <div class="info-box">
+      <div class="ib-label">Quy tắc Top-Down</div>
+      <p style="margin:0;color:var(--text);">
+        <strong>Daily/Weekly</strong> → xác định xu hướng và vùng POI lớn<br>
+        <strong>4H/1H</strong> → tinh chỉnh vùng giao dịch (POI nhỏ hơn)<br>
+        <strong>15M/5M/1M</strong> → chờ tín hiệu xác nhận và vào lệnh
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PHASE 2 ============ -->
+<section class="phase" id="g2">
+  <div class="container">
+    <div class="phase-header">
+      <div class="phase-num">PHASE 02<span class="duration">3–4 TUẦN</span></div>
+      <div>
+        <h2>Cấu trúc <em>thị trường</em></h2>
+        <p class="phase-desc">
+          Đây là <strong>giai đoạn quan trọng nhất</strong>. Không hiểu cấu trúc → mọi khái niệm
+          SMC sau này đều vô nghĩa. Bạn cần đọc được câu chuyện thị trường chỉ qua các đỉnh, đáy.
+        </p>
+      </div>
+    </div>
+
+    <h3>2.1 HH, HL, LH, LL — bốn ký tự thay đổi cuộc đời</h3>
+    <p>
+      Thị trường chỉ có ba trạng thái: <strong>uptrend</strong> (HH + HL liên tiếp),
+      <strong>downtrend</strong> (LH + LL liên tiếp), hoặc <strong>range</strong>.
+      Đọc đúng cấu trúc nghĩa là biết mình đang ở đâu trong câu chuyện.
+    </p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Market Structure — Uptrend</span>
+        <span class="chart-tag">FIG. 2.1 — HH / HL</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+          <!-- price path uptrend -->
+          <polyline points="40,260 100,200 140,230 200,150 240,180 300,100 340,140 400,60 440,90 500,30 560,70 620,20"
+            fill="none" stroke="#4a9eff" stroke-width="2"/>
+          <!-- swing points -->
+          <g font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">
+            <!-- starting low -->
+            <circle cx="40" cy="260" r="4" fill="#8a93a8"/>
+            <text x="18" y="264" fill="#8a93a8" font-size="10">LL</text>
+            <!-- HL 1 -->
+            <circle cx="100" cy="200" r="4" fill="#00d4a8"/>
+            <text x="106" y="196" fill="#00d4a8">HL</text>
+            <!-- HH 1 -->
+            <circle cx="200" cy="150" r="4" fill="#ffb547"/>
+            <text x="206" y="146" fill="#ffb547">HH</text>
+            <!-- HL 2 -->
+            <circle cx="240" cy="180" r="4" fill="#00d4a8"/>
+            <text x="246" y="176" fill="#00d4a8">HL</text>
+            <!-- HH 2 -->
+            <circle cx="300" cy="100" r="4" fill="#ffb547"/>
+            <text x="306" y="96" fill="#ffb547">HH</text>
+            <!-- HL 3 -->
+            <circle cx="340" cy="140" r="4" fill="#00d4a8"/>
+            <text x="346" y="136" fill="#00d4a8">HL</text>
+            <!-- HH 3 -->
+            <circle cx="400" cy="60" r="4" fill="#ffb547"/>
+            <text x="406" y="56" fill="#ffb547">HH</text>
+            <!-- HL 4 -->
+            <circle cx="440" cy="90" r="4" fill="#00d4a8"/>
+            <text x="446" y="86" fill="#00d4a8">HL</text>
+            <!-- HH 4 -->
+            <circle cx="500" cy="30" r="4" fill="#ffb547"/>
+            <text x="506" y="26" fill="#ffb547">HH</text>
+          </g>
+          <!-- trend channel line -->
+          <path d="M 40 260 L 600 50" stroke="#00d4a8" stroke-width="1" stroke-dasharray="4 4" opacity="0.35"/>
+          <text x="40" y="300" fill="#8a93a8" class="label-mono">UPTREND = HH + HL LIÊN TIẾP — MỖI ĐỈNH VÀ ĐÁY SAU ĐỀU CAO HƠN TRƯỚC</text>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 2.1 — Uptrend đúng nghĩa: mỗi đỉnh sau cao hơn đỉnh trước, mỗi đáy sau cao hơn đáy trước</div>
+    </div>
+
+    <h3>2.2 BOS — Break of Structure</h3>
+    <p>
+      <strong>BOS = sự xác nhận xu hướng tiếp diễn.</strong> Khi giá phá qua đỉnh gần nhất (trong uptrend)
+      hoặc phá đáy gần nhất (trong downtrend), đó là BOS — smart money tiếp tục đẩy giá theo hướng cũ.
+    </p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Break of Structure (BOS)</span>
+        <span class="chart-tag">FIG. 2.2 — CONTINUATION</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+          <!-- price path -->
+          <polyline points="40,200 100,140 140,170 220,90 260,130 360,40 400,70 500,20"
+            fill="none" stroke="#4a9eff" stroke-width="2"/>
+
+          <!-- H1 level line (previous high) -->
+          <line x1="100" y1="140" x2="700" y2="140" stroke="#ffb547" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="42" y="136" fill="#ffb547" class="label-mono" font-weight="700">H1 LEVEL</text>
+
+          <!-- BOS marker: đặt TẠI ĐIỂM giá vượt qua H1 — tức là chỗ đường giá cắt ngang H1 line -->
+          <!-- Đường giá đi từ (140,170) → (220,90), cắt H1 (y=140) tại khoảng x=175 -->
+          <line x1="175" y1="148" x2="175" y2="118" stroke="#00d4a8" stroke-width="2"/>
+          <polygon points="170,120 180,120 175,112" fill="#00d4a8"/>
+          <rect x="158" y="96" width="52" height="18" fill="#131a2c" stroke="#00d4a8" stroke-width="1"/>
+          <text x="184" y="108" text-anchor="middle" fill="#00d4a8" class="label-mono" font-weight="700">BOS ↑</text>
+
+          <!-- swing labels -->
+          <g font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">
+            <circle cx="100" cy="140" r="3" fill="#ffb547"/>
+            <text x="83" y="137" fill="#ffb547">H1</text>
+            <circle cx="140" cy="170" r="3" fill="#00d4a8"/>
+            <text x="145" y="178" fill="#00d4a8">HL</text>
+            <circle cx="220" cy="90" r="3" fill="#ffb547"/>
+            <text x="225" y="86" fill="#ffb547">H2 (HH)</text>
+            <circle cx="260" cy="130" r="3" fill="#00d4a8"/>
+            <text x="265" y="127" fill="#00d4a8">HL</text>
+            <circle cx="360" cy="40" r="3" fill="#ffb547"/>
+            <text x="365" y="37" fill="#ffb547">H3 (HH)</text>
+          </g>
+
+          <!-- Shaded area after BOS showing continuation -->
+          <rect x="175" y="20" width="525" height="120" fill="#00d4a8" opacity="0.04"/>
+
+          <text x="40" y="260" fill="#8a93a8" class="label-mono">BOS = GIÁ ĐÓNG CỬA VƯỢT QUA H1 → XU HƯỚNG TĂNG ĐƯỢC XÁC NHẬN TIẾP DIỄN</text>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 2.2 — BOS xác nhận xu hướng tiếp diễn, không phải tín hiệu đảo chiều</div>
+    </div>
+
+    <h3>2.3 CHoCH — Change of Character</h3>
+    <p>
+      <strong>CHoCH = tín hiệu đầu tiên của đảo chiều.</strong> Trong uptrend, khi giá lần đầu tiên phá đáy gần nhất
+      (HL) — đó là dấu hiệu xu hướng đang thay đổi. CHoCH xảy ra <em>trước</em> BOS theo hướng mới.
+    </p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Change of Character (CHoCH)</span>
+        <span class="chart-tag">FIG. 2.3 — REVERSAL</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+          <!--
+            Uptrend: 40,240 → 80,170(HH1) → 120,200(HL1) → 200,120(HH2) → 260,155(HL2=LAST HL) → 340,75(HH3)
+            Sau HH3: giá bắt đầu yếu, tạo LH tại 400,100 rồi đóng cửa DƯỚI HL2(y=155) tại 440,175 → CHoCH
+            Tiếp tục giảm: 500,240
+          -->
+          <polyline points="40,240 80,170 120,200 200,120 260,155 340,75 400,100 440,175 500,240"
+            fill="none" stroke="#4a9eff" stroke-width="2"/>
+
+          <!-- LAST HL level y=155 kéo dài sang phải -->
+          <line x1="260" y1="155" x2="700" y2="155" stroke="#ffb547" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text x="42" y="151" fill="#ffb547" class="label-mono" font-weight="700">LAST HL</text>
+
+          <!-- CHoCH: nến đóng cửa tại 440,175 vượt qua LAST HL (y=155)
+               Đánh dấu CHoCH tại điểm đường giá cắt qua y=155, giữa 400,100 và 440,175
+               x = 400 + (155-100)/(175-100) * (440-400) = 400 + 55/75*40 = 400 + 29.3 ≈ 429 -->
+          <line x1="429" y1="148" x2="429" y2="168" stroke="#ff3b6b" stroke-width="2.5"/>
+          <polygon points="424,166 434,166 429,176" fill="#ff3b6b"/>
+          <rect x="382" y="176" width="70" height="18" fill="#0a0e1a" stroke="#ff3b6b" stroke-width="1"/>
+          <text x="417" y="188" text-anchor="middle" fill="#ff3b6b" class="label-mono" font-weight="700">CHoCH ↓</text>
+
+          <!-- vùng bearish sau CHoCH -->
+          <rect x="429" y="155" width="271" height="105" fill="#ff3b6b" opacity="0.05"/>
+
+          <!-- Downtrend tiếp diễn sau CHoCH -->
+          <polyline points="440,175 500,240" fill="none" stroke="#ff3b6b" stroke-width="2" stroke-dasharray="4 3" opacity="0.7"/>
+
+          <!-- Swing labels -->
+          <g font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">
+            <circle cx="40"  cy="240" r="3" fill="#8a93a8"/>
+            <text x="20" y="244" fill="#8a93a8" font-size="9">LL</text>
+
+            <circle cx="80"  cy="170" r="3" fill="#ffb547"/>
+            <text x="85" y="166" fill="#ffb547">HH</text>
+
+            <circle cx="120" cy="200" r="3" fill="#00d4a8"/>
+            <text x="125" y="196" fill="#00d4a8">HL</text>
+
+            <circle cx="200" cy="120" r="3" fill="#ffb547"/>
+            <text x="205" y="116" fill="#ffb547">HH</text>
+
+            <circle cx="260" cy="155" r="3" fill="#00d4a8"/>
+            <text x="224" y="172" fill="#00d4a8">HL (last)</text>
+
+            <circle cx="340" cy="75"  r="3" fill="#ffb547"/>
+            <text x="345" y="71" fill="#ffb547">HH (đỉnh cao nhất)</text>
+
+            <!-- LH — thấp hơn HH3, dấu hiệu yếu dần -->
+            <circle cx="400" cy="100" r="3" fill="#ff3b6b"/>
+            <text x="405" y="97" fill="#ff3b6b">LH ← uptrend yếu dần</text>
+
+            <!-- điểm đóng cửa dưới LAST HL -->
+            <circle cx="440" cy="175" r="4" fill="#ff3b6b" stroke="#fff" stroke-width="1"/>
+            <text x="445" y="194" fill="#ff3b6b">đóng dưới HL = CHoCH</text>
+          </g>
+
+          <text x="40" y="278" fill="#8a93a8" class="label-mono">NẾN ĐÓNG CỬA DƯỚI "LAST HL" (y=155) → CHoCH → POTENTIAL DOWNTREND BẮT ĐẦU</text>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 2.3 — CHoCH = lần đầu phá cấu trúc ngược xu hướng cũ → cảnh báo đảo chiều</div>
+    </div>
+
+    <div class="info-box bear">
+      <div class="ib-label">Common Mistake</div>
+      <p style="margin:0;color:var(--text);">
+        Người mới hay nhầm CHoCH với pullback bình thường. <strong>Quy tắc:</strong> CHoCH phải là
+        cây nến đóng cửa <em>vượt qua</em> swing point, không chỉ wick chạm. Wick không tính.
+      </p>
+    </div>
+
+    <h3>2.4 Internal Structure vs External Structure</h3>
+    <p>
+      Mỗi swing leg lớn (external) chứa nhiều swing nhỏ (internal). Nhầm lẫn giữa hai cấp độ này
+      sẽ khiến bạn vào lệnh sai liên tục. Quy tắc: <strong>vẽ external trước, internal sau</strong>.
+    </p>
+    <ul class="checklist">
+      <li><strong>External structure:</strong> Các swing lớn nhìn rõ trên khung lớn (Daily, 4H)</li>
+      <li><strong>Internal structure:</strong> Swing nhỏ trong từng leg, dùng để tìm entry trên khung 15M, 5M</li>
+      <li><strong>Quy tắc kết hợp:</strong> External xác định bias → Internal cho entry trigger</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ PHASE 3 ============ -->
+<section class="phase" id="g3">
+  <div class="container">
+    <div class="phase-header">
+      <div class="phase-num">PHASE 03<span class="duration">4–6 TUẦN</span></div>
+      <div>
+        <h2>Khái niệm <em>cốt lõi</em> SMC</h2>
+        <p class="phase-desc">
+          Liquidity, Order Block, Fair Value Gap, Premium/Discount — bốn trụ cột tạo nên bộ
+          công cụ phân tích của bạn. Đây là lúc bắt đầu "thấy" được smart money đang làm gì.
+        </p>
+      </div>
+    </div>
+
+    <h3>3.1 Liquidity — linh hồn của SMC</h3>
+    <p>
+      Smart money cần thanh khoản để khớp lệnh khối lượng lớn. Họ không thể mua khi mọi người
+      đang mua — họ phải <strong>kích hoạt stop loss của retail</strong> để có thanh khoản.
+      Đó là lý do thị trường thường "đi ngược" trước khi đi đúng hướng.
+    </p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Liquidity Sweep (Stop Hunt)</span>
+        <span class="chart-tag">FIG. 3.1 — LIQUIDITY GRAB</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+          <!-- Equal highs line (BSL zone) -->
+          <line x1="80" y1="80" x2="560" y2="80" stroke="#ffb547" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="565" y="76" fill="#ffb547" class="label-mono" font-weight="700">EQUAL HIGHS — BSL ABOVE</text>
+
+          <!-- price action: 2 equal highs touching y=80, then sweep above to y=40, then strong drop -->
+          <polyline points="40,200 100,80 160,150 240,80 300,170 360,40 390,70 450,180 520,230 600,260"
+            fill="none" stroke="#4a9eff" stroke-width="2"/>
+
+          <!-- sweep marker -->
+          <circle cx="360" cy="40" r="14" fill="none" stroke="#ff3b6b" stroke-width="2"/>
+          <text x="380" y="36" fill="#ff3b6b" class="label-mono" font-weight="700">SWEEP</text>
+          <text x="380" y="50" fill="#ff3b6b" class="label-mono">↑ BSL grabbed</text>
+
+          <!-- Short stop loss markers (above the equal highs) -->
+          <g font-family="JetBrains Mono, monospace" font-size="9">
+            <text x="130" y="72" fill="#ff3b6b">⨯ SHORT SL</text>
+            <text x="260" y="72" fill="#ff3b6b">⨯ SHORT SL</text>
+            <text x="320" y="72" fill="#ff3b6b">⨯ SHORT SL</text>
+          </g>
+
+          <!-- bias arrow showing the real move down -->
+          <path d="M 390 75 Q 470 160 600 250" stroke="#00d4a8" stroke-width="2" fill="none" stroke-dasharray="3 3"/>
+          <text x="430" y="290" fill="#00d4a8" class="label-mono" font-weight="700">↓ HƯỚNG THẬT SAU KHI LẤY THANH KHOẢN</text>
+
+          <text x="40" y="305" fill="#8a93a8" class="label-mono">EQUAL HIGHS = NƠI SHORT TRADER ĐẶT SL → BSL = THANH KHOẢN CHO SMART MONEY BÁN</text>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 3.1 — Smart money quét BSL phía trên equal highs (kích hoạt SL của short) để gom thanh khoản, sau đó mới đẩy giá xuống theo hướng thật</div>
+    </div>
+
+    <table class="def-table">
+      <tr><th>Loại Liquidity</th><th>Vị trí</th></tr>
+      <tr><td>BSL</td><td>Buy-side Liquidity — phía trên đỉnh, nơi short stop loss</td></tr>
+      <tr><td>SSL</td><td>Sell-side Liquidity — phía dưới đáy, nơi long stop loss</td></tr>
+      <tr><td>EQL</td><td>Equal Highs/Lows — vùng thanh khoản đậm đặc</td></tr>
+      <tr><td>TRENDLINE LQ</td><td>Stop loss đặt dưới trendline — dễ bị quét</td></tr>
+    </table>
+
+    <h3>3.2 Order Block (OB) — dấu vết của tổ chức</h3>
+    <p>
+      <strong>Order Block là cây nến cuối cùng trước một động thái mạnh tạo BOS.</strong>
+      Đây là vùng smart money đã đặt lệnh lớn. Khi giá quay lại OB này, có khả năng cao họ
+      sẽ "bảo vệ" vùng đó và đẩy giá tiếp.
+    </p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Bullish Order Block</span>
+        <span class="chart-tag">FIG. 3.2 — OB IDENTIFICATION</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+          <g>
+            <!-- bearish candles trước OB (đang giảm) -->
+            <line x1="80" y1="80" x2="80" y2="140" stroke="#ff3b6b" stroke-width="1.5"/>
+            <rect x="74" y="100" width="12" height="35" fill="#ff3b6b"/>
+            <line x1="110" y1="110" x2="110" y2="170" stroke="#ff3b6b" stroke-width="1.5"/>
+            <rect x="104" y="128" width="12" height="35" fill="#ff3b6b"/>
+            <line x1="140" y1="140" x2="140" y2="200" stroke="#ff3b6b" stroke-width="1.5"/>
+            <rect x="134" y="158" width="12" height="36" fill="#ff3b6b"/>
+
+            <!-- THE ORDER BLOCK — nến giảm CUỐI CÙNG trước impulse tăng mạnh -->
+            <!-- Body từ open (y=178) đến close (y=218) — OB lấy theo BODY -->
+            <line x1="170" y1="162" x2="170" y2="228" stroke="#ff3b6b" stroke-width="1.5"/>
+            <rect x="164" y="178" width="12" height="40" fill="#ff3b6b"/>
+
+            <!-- OB zone highlight — CHỈ BAO GỒM BODY (y=178 đến y=218), không tính wick -->
+            <rect x="158" y="178" width="524" height="40" fill="#ffb547" opacity="0.1"/>
+            <line x1="158" y1="178" x2="682" y2="178" stroke="#ffb547" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <line x1="158" y1="218" x2="682" y2="218" stroke="#ffb547" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text x="186" y="172" fill="#ffb547" class="label-mono" font-weight="700">OB TOP (open nến bear)</text>
+            <text x="186" y="234" fill="#ffb547" class="label-mono" font-weight="700">OB BOTTOM (close nến bear)</text>
+            <!-- OB label box -->
+            <rect x="158" y="188" width="24" height="20" fill="#ffb547" opacity="0.3"/>
+            <text x="170" y="202" text-anchor="middle" fill="#ffb547" class="label-mono" font-weight="700" font-size="9">OB</text>
+
+            <!-- BOS level line: previous high trước khi bị phá -->
+            <line x1="80" y1="80" x2="700" y2="80" stroke="#4a9eff" stroke-width="1" stroke-dasharray="3 3" opacity="0.7"/>
+            <text x="42" y="76" fill="#4a9eff" class="label-mono" font-size="9">PREV HIGH</text>
+
+            <!-- Nến impulse tăng mạnh phá BOS (tạo ra OB) -->
+            <line x1="200" y1="60" x2="200" y2="220" stroke="#00d4a8" stroke-width="1.5"/>
+            <rect x="194" y="75" width="12" height="135" fill="#00d4a8"/>
+            <!-- BOS marker tại điểm phá previous high -->
+            <rect x="206" y="66" width="40" height="16" fill="#131a2c" stroke="#00d4a8" stroke-width="1"/>
+            <text x="226" y="77" text-anchor="middle" fill="#00d4a8" class="label-mono" font-weight="700" font-size="9">BOS ↑</text>
+
+            <line x1="230" y1="40" x2="230" y2="80" stroke="#00d4a8" stroke-width="1.5"/>
+            <rect x="224" y="52" width="12" height="24" fill="#00d4a8"/>
+            <line x1="260" y1="22" x2="260" y2="60" stroke="#00d4a8" stroke-width="1.5"/>
+            <rect x="254" y="34" width="12" height="24" fill="#00d4a8"/>
+
+            <!-- Pullback sau BOS -->
+            <line x1="310" y1="34" x2="310" y2="55" stroke="#ff3b6b" stroke-width="1.5"/>
+            <rect x="304" y="42" width="12" height="10" fill="#ff3b6b"/>
+            <line x1="340" y1="50" x2="340" y2="90" stroke="#ff3b6b" stroke-width="1.5"/>
+            <rect x="334" y="62" width="12" height="24" fill="#ff3b6b"/>
+            <line x1="370" y1="90" x2="370" y2="150" stroke="#ff3b6b" stroke-width="1.5"/>
+            <rect x="364" y="105" width="12" height="36" fill="#ff3b6b"/>
+            <line x1="400" y1="130" x2="400" y2="195" stroke="#ff3b6b" stroke-width="1.5"/>
+            <rect x="394" y="148" width="12" height="40" fill="#ff3b6b"/>
+
+            <!-- Mitigation candle: chạm vào OB zone và bật lên -->
+            <line x1="430" y1="168" x2="430" y2="220" stroke="#00d4a8" stroke-width="1.5"/>
+            <rect x="424" y="178" width="12" height="38" fill="#00d4a8"/>
+            <rect x="420" y="222" width="22" height="14" fill="#131a2c" stroke="#00d4a8" stroke-width="1"/>
+            <text x="431" y="232" text-anchor="middle" fill="#00d4a8" class="label-mono" font-size="8" font-weight="700">MITIG.</text>
+
+            <!-- Bullish reaction sau khi chạm OB -->
+            <line x1="460" y1="128" x2="460" y2="185" stroke="#00d4a8" stroke-width="1.5"/>
+            <rect x="454" y="140" width="12" height="40" fill="#00d4a8"/>
+            <line x1="490" y1="90" x2="490" y2="145" stroke="#00d4a8" stroke-width="1.5"/>
+            <rect x="484" y="102" width="12" height="38" fill="#00d4a8"/>
+            <line x1="520" y1="55" x2="520" y2="100" stroke="#00d4a8" stroke-width="1.5"/>
+            <rect x="514" y="68" width="12" height="28" fill="#00d4a8"/>
+          </g>
+
+          <text x="40" y="280" fill="#8a93a8" class="label-mono">BULLISH OB = BODY nến giảm cuối trước impulse tăng. OB zone = open đến close (không tính wick)</text>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 3.2 — Khi giá quay lại OB, đây là cơ hội long với R:R cao</div>
+    </div>
+
+    <h3>3.3 Fair Value Gap (FVG) / Imbalance</h3>
+    <p>
+      Khi thị trường di chuyển quá nhanh, sẽ tạo ra "khoảng trống" — vùng mà phe mua/bán chưa
+      khớp lệnh đầy đủ. Giá thường <strong>quay lại lấp đầy</strong> các khoảng trống này.
+    </p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Fair Value Gap (FVG)</span>
+        <span class="chart-tag">FIG. 3.3 — IMBALANCE</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 290" xmlns="http://www.w3.org/2000/svg">
+          <!--
+            FVG Bullish: 3 nến liên tiếp tăng mạnh
+            Nến 1: wick top=y180, open=y230, close=y200  → high=180
+            Nến 2: impulse mạnh, wick top=y60, open=y220, close=y70  (thân dài)
+            Nến 3: tiếp tục tăng, wick bottom=y130, open=y120, close=y80  → low=130
+
+            FVG = khoảng KHÔNG GIAN giữa HIGH nến 1 (y=180) và LOW nến 3 (y=130)
+            Tức là vùng FVG: y=130 đến y=180
+          -->
+
+          <!-- Nến 1 (bullish): high=180, open=230, close=200 -->
+          <line x1="160" y1="180" x2="160" y2="235" stroke="#00d4a8" stroke-width="1.5"/>
+          <rect x="153" y="200" width="14" height="30" fill="#00d4a8"/>
+          <text x="160" y="258" text-anchor="middle" fill="#8a93a8" class="label-mono" font-size="10">Nến 1</text>
+
+          <!-- High nến 1: y=180 — BOUNDARY dưới của FVG -->
+          <line x1="167" y1="180" x2="680" y2="180" stroke="#ffb547" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <text x="40" y="177" fill="#ffb547" class="label-mono" font-size="9" font-weight="700">High nến 1</text>
+
+          <!-- Nến 2 (impulse bullish mạnh): high=55, open=220, close=65 — thân rất dài -->
+          <line x1="230" y1="55" x2="230" y2="225" stroke="#00d4a8" stroke-width="1.5"/>
+          <rect x="223" y="65" width="14" height="148" fill="#00d4a8"/>
+          <text x="230" y="258" text-anchor="middle" fill="#8a93a8" class="label-mono" font-size="10">Nến 2</text>
+          <text x="248" y="130" fill="#00d4a8" class="label-mono" font-size="9">impulse</text>
+
+          <!-- Nến 3 (bullish tiếp): high=35, open=130, close=50 -->
+          <!-- low của nến 3 = open = y=130 — BOUNDARY trên của FVG -->
+          <line x1="300" y1="35" x2="300" y2="135" stroke="#00d4a8" stroke-width="1.5"/>
+          <rect x="293" y="50" width="14" height="75" fill="#00d4a8"/>
+          <text x="300" y="258" text-anchor="middle" fill="#8a93a8" class="label-mono" font-size="10">Nến 3</text>
+
+          <!-- Low nến 3: y=130 — BOUNDARY trên của FVG -->
+          <line x1="293" y1="130" x2="680" y2="130" stroke="#ffb547" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <text x="40" y="127" fill="#ffb547" class="label-mono" font-size="9" font-weight="700">Low nến 3</text>
+
+          <!-- FVG ZONE: giữa low nến 3 (y=130) và high nến 1 (y=180) -->
+          <rect x="153" y="130" width="527" height="50" fill="#ffb547" opacity="0.13"/>
+          <text x="460" y="150" text-anchor="middle" fill="#ffb547" class="label-mono" font-weight="700" font-size="11">BULLISH FVG</text>
+          <text x="460" y="167" text-anchor="middle" fill="#ffb547" class="label-mono" font-size="9">low nến 3 (130) → high nến 1 (180)</text>
+
+          <!-- Nến sau nến 3: giá tiếp tục tăng rồi pullback về lấp FVG -->
+          <line x1="360" y1="20" x2="360" y2="55" stroke="#00d4a8" stroke-width="1.5"/>
+          <rect x="353" y="28" width="14" height="24" fill="#00d4a8"/>
+
+          <line x1="420" y1="30" x2="420" y2="60" stroke="#ff3b6b" stroke-width="1.5"/>
+          <rect x="413" y="38" width="14" height="18" fill="#ff3b6b"/>
+
+          <line x1="480" y1="55" x2="480" y2="100" stroke="#ff3b6b" stroke-width="1.5"/>
+          <rect x="473" y="68" width="14" height="26" fill="#ff3b6b"/>
+
+          <line x1="540" y1="95" x2="540" y2="155" stroke="#ff3b6b" stroke-width="1.5"/>
+          <rect x="533" y="108" width="14" height="40" fill="#ff3b6b"/>
+
+          <!-- Nến chạm FVG và bật lên -->
+          <line x1="600" y1="110" x2="600" y2="185" stroke="#00d4a8" stroke-width="1.5"/>
+          <rect x="593" y="115" width="14" height="62" fill="#00d4a8"/>
+          <!-- wick chạm vào FVG zone -->
+          <circle cx="600" cy="185" r="5" fill="none" stroke="#00d4a8" stroke-width="1.5"/>
+          <text x="560" y="205" fill="#00d4a8" class="label-mono" font-size="9" font-weight="700">chạm FVG → bật</text>
+
+          <text x="40" y="276" fill="#8a93a8" class="label-mono">FVG = HIGH nến 1 đến LOW nến 3 — vùng "trống" vì nến 2 quá mạnh, không ai bán/mua trong vùng này</text>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 3.3 — FVG là magnet thu hút giá quay lại "lấp đầy" sự mất cân bằng</div>
+    </div>
+
+    <h3>3.4 Premium &amp; Discount</h3>
+    <p>
+      Trong bất kỳ range giá nào, vùng trên 50% là <strong>Premium</strong> (giá đắt — nên bán),
+      vùng dưới 50% là <strong>Discount</strong> (giá rẻ — nên mua). Đây là tư duy của smart money:
+      <em>buy low, sell high</em>. Áp dụng Fibonacci 0-50-100 để xác định.
+    </p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Premium / Discount Zones</span>
+        <span class="chart-tag">FIG. 3.4 — PRICE ZONES</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+          <!--
+            Range: HIGH ở y=30, LOW ở y=260, chiều cao = 230px
+            50%  = y=30+115 = 145
+            62%  = y=30+0.62*230 = 172.6 ≈ 173
+            79%  = y=30+0.79*230 = 211.7 ≈ 212
+          -->
+
+          <!-- Premium zone (trên 50%) -->
+          <rect x="160" y="30" width="360" height="115" fill="#ff3b6b" opacity="0.07"/>
+          <text x="340" y="80" text-anchor="middle" fill="#ff3b6b" font-family="JetBrains Mono,monospace" font-weight="700" font-size="13">PREMIUM ZONE</text>
+          <text x="340" y="98" text-anchor="middle" fill="#ff3b6b" class="label-mono">↘ LOOK FOR SHORTS</text>
+
+          <!-- 50% equilibrium -->
+          <line x1="160" y1="145" x2="520" y2="145" stroke="#ffb547" stroke-width="1.5" stroke-dasharray="6 3"/>
+
+          <!-- Discount zone (dưới 50%) -->
+          <rect x="160" y="145" width="360" height="115" fill="#00d4a8" opacity="0.07"/>
+          <text x="340" y="193" text-anchor="middle" fill="#00d4a8" font-family="JetBrains Mono,monospace" font-weight="700" font-size="13">DISCOUNT ZONE</text>
+          <text x="340" y="211" text-anchor="middle" fill="#00d4a8" class="label-mono">↗ LOOK FOR LONGS</text>
+
+          <!-- OTE zone: 62%–79% nằm trong Discount -->
+          <rect x="160" y="173" width="360" height="39" fill="#ffb547" opacity="0.18"/>
+          <line x1="160" y1="173" x2="520" y2="173" stroke="#ffb547" stroke-width="1.2" stroke-dasharray="3 2"/>
+          <line x1="160" y1="212" x2="520" y2="212" stroke="#ffb547" stroke-width="1.2" stroke-dasharray="3 2"/>
+          <text x="340" y="196" text-anchor="middle" fill="#ffb547" class="label-mono" font-weight="700" font-size="10">OTE (62–79%)</text>
+
+          <!-- Cột nhãn BÊN PHẢI — một cột duy nhất, không chồng -->
+          <g font-family="JetBrains Mono, monospace" font-size="10" fill="#e8ecf5">
+            <!-- tick + label từng mức -->
+            <line x1="520" y1="30"  x2="530" y2="30"  stroke="#4a5169" stroke-width="1"/>
+            <text x="534" y="34">0% — HIGH</text>
+
+            <line x1="520" y1="145" x2="530" y2="145" stroke="#ffb547" stroke-width="1.5"/>
+            <text x="534" y="149" fill="#ffb547" font-weight="700">50% — EQ</text>
+
+            <line x1="520" y1="173" x2="530" y2="173" stroke="#ffb547" stroke-width="1"/>
+            <text x="534" y="177" fill="#ffb547">62% OTE</text>
+
+            <line x1="520" y1="212" x2="530" y2="212" stroke="#ffb547" stroke-width="1"/>
+            <text x="534" y="216" fill="#ffb547">79% OTE</text>
+
+            <line x1="520" y1="260" x2="530" y2="260" stroke="#4a5169" stroke-width="1"/>
+            <text x="534" y="264">100% — LOW</text>
+          </g>
+
+          <!-- Border của range box -->
+          <rect x="160" y="30" width="360" height="230" fill="none" stroke="#1f2940" stroke-width="1.5"/>
+
+          <text x="40" y="285" fill="#8a93a8" class="label-mono">OTE nằm trong DISCOUNT (62–79% fib từ swing high) — vùng entry tối ưu khi bias bullish</text>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 3.4 — Buy ở discount, sell ở premium. OTE zone (62-79% Fib) là vùng entry tối ưu</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PHASE 4 ============ -->
+<section class="phase" id="g4">
+  <div class="container">
+    <div class="phase-header">
+      <div class="phase-num">PHASE 04<span class="duration">6–8 TUẦN</span></div>
+      <div>
+        <h2>ICT Concepts <em>cần biết</em></h2>
+        <p class="phase-desc">
+          Không cần học toàn bộ ICT. Với Mainstream SMC, chỉ cần nắm 2 concept từ ICT là
+          đủ: Killzones (biết <em>khi nào</em> trade) và Power of Three (hiểu <em>tại sao</em>
+          giá fake out). Phần còn lại học sau khi đã profitable.
+        </p>
+      </div>
+    </div>
+
+    <h3>4.1 Killzones — chỉ giao dịch khi có thanh khoản</h3>
+    <p>
+      Smart money chỉ hoạt động mạnh trong các "killzone" — khoảng thời gian ngắn nhưng
+      tập trung 80% động thái thật của thị trường. Ngoài killzone, hãy nghỉ ngơi.
+    </p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Daily Killzones (giờ EST / GMT-4)</span>
+        <span class="chart-tag">FIG. 4.1 — TIME WINDOWS</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg">
+          <!-- timeline -->
+          <line x1="40" y1="180" x2="660" y2="180" stroke="#1f2940" stroke-width="2"/>
+          <!-- hour ticks -->
+          <g font-family="JetBrains Mono, monospace" font-size="9" fill="#4a5169">
+            <text x="40" y="200">00:00</text>
+            <text x="170" y="200">06:00</text>
+            <text x="300" y="200">10:00</text>
+            <text x="430" y="200">14:00</text>
+            <text x="560" y="200">20:00</text>
+            <text x="660" y="200" text-anchor="end">24:00</text>
+          </g>
+
+          <!-- Asian range -->
+          <rect x="40" y="100" width="130" height="60" fill="#a78bfa" opacity="0.2"/>
+          <rect x="40" y="100" width="130" height="60" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="105" y="135" text-anchor="middle" fill="#a78bfa" class="label-mono" font-weight="700">ASIAN</text>
+          <text x="105" y="150" text-anchor="middle" fill="#a78bfa" class="label-mono">19:00–04:00</text>
+          <text x="105" y="90" text-anchor="middle" fill="#a78bfa" class="label-mono">range / accumulation</text>
+
+          <!-- London KZ -->
+          <rect x="200" y="60" width="100" height="100" fill="#4a9eff" opacity="0.25"/>
+          <rect x="200" y="60" width="100" height="100" fill="none" stroke="#4a9eff" stroke-width="1.5"/>
+          <text x="250" y="105" text-anchor="middle" fill="#4a9eff" class="label-mono" font-weight="700">LONDON KZ</text>
+          <text x="250" y="120" text-anchor="middle" fill="#4a9eff" class="label-mono">02:00–05:00</text>
+          <text x="250" y="50" text-anchor="middle" fill="#4a9eff" class="label-mono">judas swing</text>
+
+          <!-- NY KZ -->
+          <rect x="330" y="40" width="120" height="120" fill="#00d4a8" opacity="0.25"/>
+          <rect x="330" y="40" width="120" height="120" fill="none" stroke="#00d4a8" stroke-width="1.5"/>
+          <text x="390" y="95" text-anchor="middle" fill="#00d4a8" class="label-mono" font-weight="700">NY KZ</text>
+          <text x="390" y="110" text-anchor="middle" fill="#00d4a8" class="label-mono">07:00–10:00</text>
+          <text x="390" y="30" text-anchor="middle" fill="#00d4a8" class="label-mono">strongest moves</text>
+
+          <!-- NY PM -->
+          <rect x="480" y="100" width="80" height="60" fill="#ffb547" opacity="0.2"/>
+          <rect x="480" y="100" width="80" height="60" fill="none" stroke="#ffb547" stroke-width="1.5"/>
+          <text x="520" y="135" text-anchor="middle" fill="#ffb547" class="label-mono" font-weight="700">NY PM</text>
+          <text x="520" y="150" text-anchor="middle" fill="#ffb547" class="label-mono">13:30–16:00</text>
+
+          <text x="40" y="220" fill="#8a93a8" class="label-mono">MAINSTREAM SMC: CHỈ CẦN TRADE TRONG LONDON KZ VÀ NY KZ LÀ ĐỦ</text>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 4.1 — 80% setup chất lượng cao xuất hiện trong London &amp; NY killzones</div>
+    </div>
+
+    <h3>4.2 Power of Three (PO3)</h3>
+    <p>
+      Mỗi phiên giao dịch có 3 giai đoạn: <strong>Accumulation</strong> (tích lũy) →
+      <strong>Manipulation</strong> (đánh lừa, quét stop) → <strong>Distribution</strong> (phân phối, đi đúng hướng).
+      Hiểu PO3 giúp bạn không bị lừa bởi cú "fake out" đầu phiên.</p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Power of Three (Bullish PO3)</span>
+        <span class="chart-tag">FIG. 4.2 — AMD CYCLE</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+          <!-- Phase 1: Accumulation -->
+          <rect x="40" y="120" width="180" height="80" fill="#a78bfa" opacity="0.1"/>
+          <polyline points="50,160 80,150 110,170 140,155 170,165 200,160 215,155"
+            fill="none" stroke="#a78bfa" stroke-width="2"/>
+          <text x="130" y="105" text-anchor="middle" fill="#a78bfa" class="label-mono" font-weight="700">1. ACCUMULATION</text>
+          <text x="130" y="220" text-anchor="middle" fill="#a78bfa" class="label-mono">range tích lũy âm thầm</text>
+
+          <!-- Phase 2: Manipulation -->
+          <rect x="240" y="120" width="120" height="100" fill="#ff3b6b" opacity="0.1"/>
+          <polyline points="240,155 270,200 300,225 330,210 350,190"
+            fill="none" stroke="#ff3b6b" stroke-width="2"/>
+          <line x1="240" y1="200" x2="360" y2="200" stroke="#ff3b6b" stroke-width="1" stroke-dasharray="3 2"/>
+          <text x="300" y="105" text-anchor="middle" fill="#ff3b6b" class="label-mono" font-weight="700">2. MANIPULATION</text>
+          <text x="300" y="248" text-anchor="middle" fill="#ff3b6b" class="label-mono">quét SSL ↓ (đánh lừa)</text>
+          <text x="365" y="225" fill="#ff3b6b" class="label-mono">⨯ stop hunt</text>
+
+          <!-- Phase 3: Distribution -->
+          <rect x="380" y="40" width="260" height="180" fill="#00d4a8" opacity="0.1"/>
+          <polyline points="380,190 410,160 440,130 470,140 500,100 530,110 560,70 590,80 620,40"
+            fill="none" stroke="#00d4a8" stroke-width="2"/>
+          <text x="510" y="30" text-anchor="middle" fill="#00d4a8" class="label-mono" font-weight="700">3. DISTRIBUTION</text>
+          <text x="510" y="245" text-anchor="middle" fill="#00d4a8" class="label-mono">đẩy giá theo hướng thật ↑</text>
+
+          <!-- arrows -->
+          <path d="M 220 160 L 240 160" stroke="#8a93a8" stroke-width="1" marker-end="url(#arr1)"/>
+          <path d="M 360 200 L 380 190" stroke="#8a93a8" stroke-width="1" marker-end="url(#arr1)"/>
+          <defs>
+            <marker id="arr1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#8a93a8"/>
+            </marker>
+          </defs>
+
+          <text x="40" y="305" fill="#8a93a8" class="label-mono">PO3 = ACCUMULATION → MANIPULATION (FAKE) → DISTRIBUTION (REAL MOVE)</text>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 4.2 — Smart money tích lũy, đánh lừa retail, rồi mới chạy hướng thật</div>
+    </div>
+
+    <h3>4.3 Hai khái niệm thực dụng cần biết thêm</h3>
+    <ul class="checklist">
+      <li><strong>Daily Bias:</strong> Mỗi sáng nhìn Daily/4H xác định hướng đi trong ngày — bullish hay bearish. Chỉ trade theo hướng bias, không trade ngược. Đây là bước quan trọng nhất trước khi mở chart nhỏ.</li>
+      <li><strong>Judas Swing:</strong> Cú fake move đầu phiên London hoặc NY — giá chạy ngược chiều bias để quét stop, sau đó mới đi đúng hướng. Nhận ra Judas Swing giúp bạn không bị stop out oan ở đầu session.</li>
+    </ul>
+
+    <div class="info-box">
+      <div class="ib-label">Với Mainstream SMC — dừng ở đây là đủ</div>
+      <p style="margin:0; color:var(--text);">
+        OTE, SMT Divergence, Breaker Block, Turtle Soup... là các concept ICT nâng cao —
+        <strong>không cần thiết</strong> để có hệ thống giao dịch profitable với Mainstream SMC.
+        Học những thứ đó sau khi bạn đã trade có lợi nhuận ổn định ít nhất 3 tháng.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ PHASE 5 ============ -->
+<section class="phase" id="g5">
+  <div class="container">
+    <div class="phase-header">
+      <div class="phase-num">PHASE 05<span class="duration">4–6 TUẦN</span></div>
+      <div>
+        <h2>Xây dựng <em>hệ thống</em></h2>
+        <p class="phase-desc">
+          Hệ thống <strong>SMC Retail / Mainstream SMC</strong> — 3 step, 4 concept cốt lõi:
+          Structure + OB + Liquidity + FVG. OB lấy toàn bộ nến (body + wick).
+          Không cần Fibonacci, không cần SMT, không cần ICT nâng cao.
+        </p>
+      </div>
+    </div>
+
+    <!-- ======== 5.1 QUY TRÌNH 3 STEP ======== -->
+    <h3>5.1 Quy trình 3 Step — Mainstream SMC</h3>
+
+    <!-- FIG 5.1 — Overview flowchart -->
+    <div class="chart-card" style="margin: 24px 0 40px;">
+      <div class="chart-header">
+        <span class="chart-title">Mainstream SMC — 3-Step Workflow</span>
+        <span class="chart-tag">FIG. 5.1 — DAILY ROUTINE</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 310" xmlns="http://www.w3.org/2000/svg">
+          <g font-family="JetBrains Mono, monospace">
+            <rect x="40" y="20" width="620" height="60" fill="#131a2c" stroke="#4a9eff" stroke-width="1.5"/>
+            <text x="60" y="44" fill="#4a9eff" font-size="12" font-weight="700">STEP 01 — DAILY / 4H (5–10 phút mỗi sáng)</text>
+            <text x="60" y="62" fill="#e8ecf5" font-size="11">Xác định Daily Bias (bull/bear) · đánh dấu BSL/SSL · tìm 1H OB/FVG trong Discount hoặc Premium</text>
+            <line x1="350" y1="80" x2="350" y2="104" stroke="#4a9eff" stroke-width="1.5"/>
+            <polygon points="343,101 357,101 350,112" fill="#4a9eff"/>
+
+            <rect x="40" y="115" width="620" height="60" fill="#131a2c" stroke="#ffb547" stroke-width="1.5"/>
+            <text x="60" y="139" fill="#ffb547" font-size="12" font-weight="700">STEP 02 — 1H (trong London 02:00–05:00 hoặc NY 07:00–10:00 EST)</text>
+            <text x="60" y="157" fill="#e8ecf5" font-size="11">Chờ giá chạm OB/FVG · xác nhận có Liquidity Sweep · quan sát phản ứng nến tại OB — KHÔNG VÀO LỆNH</text>
+            <line x1="350" y1="175" x2="350" y2="199" stroke="#ffb547" stroke-width="1.5"/>
+            <polygon points="343,196 357,196 350,207" fill="#ffb547"/>
+
+            <rect x="40" y="210" width="620" height="60" fill="#131a2c" stroke="#00d4a8" stroke-width="1.5"/>
+            <text x="60" y="234" fill="#00d4a8" font-size="12" font-weight="700">STEP 03 — 5M (ENTRY)</text>
+            <text x="60" y="252" fill="#e8ecf5" font-size="11">5M CHoCH xác nhận đảo chiều · entry tại 5M OB · SL dưới sweep low · TP tại BSL/SSL đối diện</text>
+
+            <text x="350" y="298" text-anchor="middle" fill="#4a5169" font-size="11" letter-spacing="0.15em">DAILY/4H GIVES BIAS · 1H GIVES POI · 5M GIVES ENTRY</text>
+          </g>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 5.1 — Mainstream SMC: 3 step rõ ràng, lặp lại được mỗi ngày</div>
+    </div>
+
+    <!-- ======== STEP 01 ======== -->
+    <div style="border: 1px solid #1f2940; margin-bottom: 2px; overflow: hidden;">
+      <div style="background: #0f1524; border-left: 4px solid #4a9eff; padding: 18px 28px; display: flex; align-items: center; gap: 20px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#4a9eff; letter-spacing:0.2em; min-width:80px;">STEP 01</span>
+        <span style="font-family:'Fraunces',serif; font-size:20px; font-weight:600; color:#e8ecf5;">Daily / 4H — Bias &amp; OB/FVG</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#4a5169; margin-left:auto;">5–10 PHÚT MỖI SÁNG</span>
+      </div>
+      <div style="background:#131a2c; padding: 28px;">
+        <p style="color:#8a93a8; margin-bottom:24px; font-size:15px;">
+          Làm mỗi sáng trước session. Hai việc: <strong style="color:#e8ecf5">(1) xác định hướng đi hôm nay</strong>
+          và <strong style="color:#e8ecf5">(2) đánh dấu OB/FVG sẽ trade</strong>. Tất cả trong một bước duy nhất.
+        </p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+          <div>
+            <h4 style="margin:0 0 12px; font-size:14px; color:#4a9eff;">Phần A — Daily/4H: Xác định Bias</h4>
+            <ul class="checklist">
+              <li><strong>Structure Daily:</strong> HH+HL liên tiếp → Bullish Bias. LH+LL liên tiếp → Bearish Bias. Chỉ trade theo chiều bias.</li>
+              <li><strong>BSL/SSL gần nhất:</strong> Đỉnh/đáy chưa bị quét = nơi giá đang nhắm đến. Đây là TP target.</li>
+              <li><strong>Premium/Discount:</strong> Giá đang trên 50% range → Premium (tìm short). Dưới 50% → Discount (tìm long).</li>
+              <li><strong>Tin tức:</strong> NFP, FOMC, CPI? → không trade 30 phút trước/sau.</li>
+            </ul>
+            <h4 style="margin:20px 0 12px; font-size:14px; color:#4a9eff;">Phần B — 1H: Tìm OB / FVG</h4>
+            <ul class="checklist">
+              <li><strong>Bullish OB:</strong> Nến giảm cuối cùng trước impulse tăng mạnh. Lấy <em>toàn bộ nến (high đến low)</em>.</li>
+              <li><strong>Bearish OB:</strong> Nến tăng cuối cùng trước impulse giảm mạnh. Lấy toàn bộ nến (high đến low).</li>
+              <li><strong>FVG 1H:</strong> Khoảng trống giữa high nến 1 và low nến 3 trong 3 nến liên tiếp — chưa được lấp.</li>
+              <li><strong>Điều kiện:</strong> OB/FVG phải đồng pha bias — bullish bias thì tìm OB trong Discount, bearish thì tìm OB trong Premium.</li>
+              <li><strong>PDH/PDL:</strong> High/low ngày hôm qua — thường là key level cần lưu ý.</li>
+            </ul>
+            <div class="info-box" style="margin-top:16px; padding:14px 18px; border-left-color:#4a9eff;">
+              <div class="ib-label" style="color:#4a9eff;">OB Mainstream vs ICT</div>
+              <p style="margin:0; color:var(--text); font-size:13px;">
+                <strong>Mainstream:</strong> lấy <em>toàn bộ nến</em> = từ high đến low (body + cả 2 wick).<br>
+                <strong>ICT:</strong> chỉ lấy body nến.<br>
+                Mainstream OB rộng hơn → dễ xác định, SL cần rộng hơn một chút.
+              </p>
+            </div>
+          </div>
+          <div>
+            <div class="chart-card" style="margin:0;">
+              <div class="chart-header">
+                <span class="chart-title">1H — Bullish OB trong Discount</span>
+                <span class="chart-tag">FIG. 5.1a</span>
+              </div>
+              <div class="chart-body" style="min-height:260px; padding:16px;">
+                <svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Premium zone -->
+                  <rect x="0" y="0" width="320" height="85" fill="#ff3b6b" opacity="0.05"/>
+                  <text x="5" y="14" fill="#ff3b6b" font-family="JetBrains Mono,monospace" font-size="8">PREMIUM</text>
+                  <!-- 50% line -->
+                  <line x1="0" y1="110" x2="320" y2="110" stroke="#ffb547" stroke-width="0.8" stroke-dasharray="4 3"/>
+                  <text x="268" y="106" fill="#ffb547" font-family="JetBrains Mono,monospace" font-size="8">50% EQ</text>
+                  <!-- Discount zone -->
+                  <rect x="0" y="110" width="320" height="130" fill="#00d4a8" opacity="0.04"/>
+                  <text x="5" y="232" fill="#00d4a8" font-family="JetBrains Mono,monospace" font-size="8">DISCOUNT</text>
+
+                  <!-- BSL target -->
+                  <line x1="0" y1="15" x2="320" y2="15" stroke="#ffb547" stroke-width="0.8" stroke-dasharray="3 2"/>
+                  <text x="5" y="11" fill="#ffb547" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">BSL (TP target)</text>
+
+                  <!-- Nến giảm trước OB -->
+                  <line x1="40" y1="148" x2="40" y2="182" stroke="#ff3b6b" stroke-width="1.2"/><rect x="35" y="156" width="10" height="20" fill="#ff3b6b"/>
+                  <line x1="62" y1="162" x2="62" y2="196" stroke="#ff3b6b" stroke-width="1.2"/><rect x="57" y="170" width="10" height="20" fill="#ff3b6b"/>
+
+                  <!-- OB candle: nến bear CUỐI trước impulse — high=y170, low=y220 -->
+                  <line x1="84" y1="170" x2="84" y2="220" stroke="#ff3b6b" stroke-width="1.5"/>
+                  <rect x="79" y="178" width="10" height="34" fill="#ff3b6b"/>
+
+                  <!-- OB zone: toàn bộ nến (y=170 đến y=220) -->
+                  <rect x="0" y="170" width="320" height="50" fill="#4a9eff" opacity="0.12"/>
+                  <line x1="0" y1="170" x2="320" y2="170" stroke="#4a9eff" stroke-width="1.2" stroke-dasharray="5 3"/>
+                  <line x1="0" y1="220" x2="320" y2="220" stroke="#4a9eff" stroke-width="1.2" stroke-dasharray="5 3"/>
+                  <text x="96" y="190" fill="#4a9eff" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">BULLISH OB (high→low)</text>
+
+                  <!-- Impulse tăng mạnh sau OB: tạo ra FVG -->
+                  <!-- Nến bull 1: low=y218 (trong OB), high=y140 -->
+                  <line x1="106" y1="140" x2="106" y2="218" stroke="#00d4a8" stroke-width="1.5"/><rect x="101" y="145" width="10" height="65" fill="#00d4a8"/>
+                  <!-- Nến bull 2: low=y118, high=y80 -->
+                  <line x1="128" y1="80" x2="128" y2="118" stroke="#00d4a8" stroke-width="1.5"/><rect x="123" y="85" width="10" height="28" fill="#00d4a8"/>
+                  <!-- Nến bull 3: low=y105, high=y65 -->
+                  <line x1="150" y1="65" x2="150" y2="105" stroke="#00d4a8" stroke-width="1.5"/><rect x="145" y="70" width="10" height="28" fill="#00d4a8"/>
+
+                  <!-- FVG: high nến bull 1 (y=140) đến low nến bull 3 (y=105) -->
+                  <!-- FVG nằm TRÊN OB, tách biệt hoàn toàn -->
+                  <rect x="100" y="105" width="220" height="35" fill="#ffb547" opacity="0.14"/>
+                  <line x1="100" y1="105" x2="320" y2="105" stroke="#ffb547" stroke-width="0.8" stroke-dasharray="3 2"/>
+                  <line x1="100" y1="140" x2="320" y2="140" stroke="#ffb547" stroke-width="0.8" stroke-dasharray="3 2"/>
+                  <text x="160" y="126" fill="#ffb547" font-family="JetBrains Mono,monospace" font-size="8">1H FVG</text>
+
+                  <!-- Pullback price path: từ bull 3 kéo về lấp FVG rồi chạm OB -->
+                  <polyline points="160,62 185,78 210,98 235,120 255,148 270,175"
+                    fill="none" stroke="#4a9eff" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.7"/>
+                  <text x="248" y="168" fill="#4a9eff" font-family="JetBrains Mono,monospace" font-size="7">pullback</text>
+                </svg>
+              </div>
+              <div class="chart-caption">OB = toàn bộ nến bear cuối (high→low). FVG = vùng gap phía trên. Cả hai trong Discount = POI ưu tiên.</div>
+            </div>
+          </div>
+        </div>
+        <div class="info-box" style="margin-top:24px;">
+          <div class="ib-label">Output Step 1 — viết vào journal</div>
+          <p style="margin:0; color:var(--text);">
+            <em>"Bias <strong>BULLISH</strong>. 1H Bullish OB tại [X.XXXX – X.XXXX] trong Discount. BSL target tại [Y.YYYY]. Chỉ xét LONG hôm nay."</em>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- arrow -->
+    <div style="display:flex; justify-content:center; padding:6px 0;">
+      <svg width="20" height="24" viewBox="0 0 20 24"><line x1="10" y1="0" x2="10" y2="18" stroke="#4a5169" stroke-width="1.5"/><polygon points="4,14 16,14 10,22" fill="#4a5169"/></svg>
+    </div>
+
+    <!-- ======== STEP 02 ======== -->
+    <div style="border: 1px solid #1f2940; margin-bottom: 2px; overflow: hidden;">
+      <div style="background: #0f1524; border-left: 4px solid #ffb547; padding: 18px 28px; display: flex; align-items: center; gap: 20px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#ffb547; letter-spacing:0.2em; min-width:80px;">STEP 02</span>
+        <span style="font-family:'Fraunces',serif; font-size:20px; font-weight:600; color:#e8ecf5;">1H — Chờ Giá Vào OB &amp; Liquidity Sweep</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#4a5169; margin-left:auto;">TRONG KILLZONE</span>
+      </div>
+      <div style="background:#131a2c; padding: 28px;">
+        <p style="color:#8a93a8; margin-bottom:24px; font-size:15px;">
+          Quan sát trên 1H trong Killzone. <strong style="color:#e8ecf5">Không vào lệnh ở bước này.</strong>
+          Chỉ xác nhận 2 điều: giá đã chạm OB và có Liquidity Sweep. Khi đủ 2 điều kiện → xuống 5M.
+        </p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+          <div>
+            <h4 style="margin:0 0 12px; font-size:14px; color:#ffb547;">Hai điều kiện bắt buộc</h4>
+            <ul class="checklist">
+              <li><strong>Đang trong Killzone?</strong> London 02:00–05:00 EST hoặc NY 07:00–10:00 EST. Ngoài khung giờ này → skip, chờ session tiếp theo.</li>
+              <li><strong>Có Liquidity Sweep?</strong> Giá quét SSL (với long) hoặc BSL (với short) ngay trước hoặc khi chạm OB. Không có sweep → setup yếu, cân nhắc bỏ qua.</li>
+            </ul>
+            <h4 style="margin:20px 0 12px; font-size:14px; color:#ffb547;">Quan sát thêm</h4>
+            <ul class="checklist">
+              <li><strong>Phản ứng nến tại OB:</strong> Pin bar, engulfing, nến đóng mạnh ngược chiều → tín hiệu tốt để xuống 5M.</li>
+              <li><strong>OB bị invalidate?</strong> Nến đóng cửa vượt qua hoàn toàn OB (kể cả wick) → OB không còn giá trị, không trade.</li>
+            </ul>
+            <div class="info-box bear" style="margin-top:16px; padding:14px 18px;">
+              <div class="ib-label">Lỗi phổ biến nhất</div>
+              <p style="margin:0; color:var(--text); font-size:13px;">
+                Thấy giá gần OB hoặc không có sweep vẫn vào lệnh. <strong>Đây là đoán mò, không phải trading.</strong>
+                Không đủ 2 điều kiện → đóng chart, chờ setup tiếp.
+              </p>
+            </div>
+          </div>
+          <div>
+            <div class="chart-card" style="margin:0;">
+              <div class="chart-header">
+                <span class="chart-title">1H — SSL Sweep tại Bullish OB</span>
+                <span class="chart-tag">FIG. 5.1b</span>
+              </div>
+              <div class="chart-body" style="min-height:240px; padding:16px;">
+                <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Killzone label -->
+                  <rect x="115" y="2" width="130" height="14" fill="#ffb547" opacity="0.15"/>
+                  <text x="180" y="12" text-anchor="middle" fill="#ffb547" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">NY KILLZONE</text>
+
+                  <!-- 1H OB zone (toàn bộ nến: high→low) y=138–182 -->
+                  <rect x="0" y="138" width="320" height="44" fill="#4a9eff" opacity="0.1"/>
+                  <line x1="0" y1="138" x2="320" y2="138" stroke="#4a9eff" stroke-width="1.2" stroke-dasharray="5 3"/>
+                  <line x1="0" y1="182" x2="320" y2="182" stroke="#4a9eff" stroke-width="1.2" stroke-dasharray="5 3"/>
+                  <text x="4" y="151" fill="#4a9eff" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">1H OB (high→low)</text>
+
+                  <!-- SSL level: đáy nến trước, nằm RÕ RÀNG dưới OB bottom (y=200) -->
+                  <line x1="0" y1="200" x2="145" y2="200" stroke="#ff3b6b" stroke-width="1" stroke-dasharray="3 2"/>
+                  <text x="2" y="212" fill="#ff3b6b" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">SSL (đáy cũ)</text>
+
+                  <!-- Nến giảm vào OB -->
+                  <line x1="20" y1="28" x2="20" y2="62" stroke="#ff3b6b" stroke-width="1.2"/><rect x="15" y="36" width="10" height="20" fill="#ff3b6b"/>
+                  <line x1="42" y1="45" x2="42" y2="80" stroke="#ff3b6b" stroke-width="1.2"/><rect x="37" y="53" width="10" height="20" fill="#ff3b6b"/>
+                  <line x1="64" y1="65" x2="64" y2="102" stroke="#ff3b6b" stroke-width="1.2"/><rect x="59" y="73" width="10" height="22" fill="#ff3b6b"/>
+                  <line x1="86" y1="88" x2="86" y2="125" stroke="#ff3b6b" stroke-width="1.2"/><rect x="81" y="96" width="10" height="22" fill="#ff3b6b"/>
+                  <line x1="108" y1="112" x2="108" y2="148" stroke="#ff3b6b" stroke-width="1.2"/><rect x="103" y="120" width="10" height="22" fill="#ff3b6b"/>
+
+                  <!-- Nến sweep: wick đâm QUA SSL (y=200), body đóng lại TRONG OB -->
+                  <line x1="130" y1="140" x2="130" y2="205" stroke="#ff3b6b" stroke-width="1.8"/>
+                  <rect x="125" y="148" width="10" height="28" fill="#ff3b6b"/>
+                  <circle cx="130" cy="205" r="5" fill="none" stroke="#ff3b6b" stroke-width="1.8"/>
+                  <text x="144" y="208" fill="#ff3b6b" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">① SSL SWEEP</text>
+
+                  <!-- Nến phản ứng (pin bar bật lên từ OB) -->
+                  <line x1="155" y1="118" x2="155" y2="186" stroke="#00d4a8" stroke-width="1.8"/>
+                  <rect x="150" y="120" width="10" height="24" fill="#00d4a8"/>
+                  <text x="169" y="128" fill="#00d4a8" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">② PIN BAR</text>
+
+                  <!-- Bullish reaction -->
+                  <line x1="178" y1="95" x2="178" y2="135" stroke="#00d4a8" stroke-width="1.2"/><rect x="173" y="100" width="10" height="28" fill="#00d4a8"/>
+                  <line x1="200" y1="75" x2="200" y2="108" stroke="#00d4a8" stroke-width="1.2"/><rect x="195" y="80" width="10" height="22" fill="#00d4a8"/>
+                  <line x1="222" y1="55" x2="222" y2="88" stroke="#00d4a8" stroke-width="1.2"/><rect x="217" y="60" width="10" height="22" fill="#00d4a8"/>
+
+                  <text x="165" y="218" fill="#8a93a8" font-family="JetBrains Mono,monospace" font-size="7">→ xuống 5M</text>
+                </svg>
+              </div>
+              <div class="chart-caption">SSL Sweep trong OB + pin bar xác nhận → đủ điều kiện xuống 5M vào lệnh</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- arrow -->
+    <div style="display:flex; justify-content:center; padding:6px 0;">
+      <svg width="20" height="24" viewBox="0 0 20 24"><line x1="10" y1="0" x2="10" y2="18" stroke="#4a5169" stroke-width="1.5"/><polygon points="4,14 16,14 10,22" fill="#4a5169"/></svg>
+    </div>
+
+    <!-- ======== STEP 03 ======== -->
+    <div style="border: 1px solid #1f2940; overflow: hidden;">
+      <div style="background: #0f1524; border-left: 4px solid #00d4a8; padding: 18px 28px; display: flex; align-items: center; gap: 20px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#00d4a8; letter-spacing:0.2em; min-width:80px;">STEP 03</span>
+        <span style="font-family:'Fraunces',serif; font-size:20px; font-weight:600; color:#e8ecf5;">5M — CHoCH xác nhận &amp; Vào lệnh</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#4a5169; margin-left:auto;">EXECUTION</span>
+      </div>
+      <div style="background:#131a2c; padding: 28px;">
+        <p style="color:#8a93a8; margin-bottom:24px; font-size:15px;">
+          Bước duy nhất vào lệnh. Xuống 5M sau khi Step 2 đã xác nhận. Chờ <strong style="color:#e8ecf5">5M CHoCH</strong>:
+          nến 5M đóng cửa vượt qua swing high gần nhất (long) hoặc swing low gần nhất (short).
+        </p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:24px;">
+          <div>
+            <h4 style="margin:0 0 12px; font-size:14px; color:#00d4a8;">3 Model Entry Mainstream SMC</h4>
+            <div class="info-box bull" style="margin-bottom:12px; padding:14px 18px;">
+              <div class="ib-label">Model A — CHoCH + pullback vào 5M OB</div>
+              <p style="margin:0; color:var(--text-dim); font-size:13px;">
+                Chờ 5M CHoCH (đóng cửa vượt <em>swing high gần nhất</em>) → giá pullback vào 5M OB (body nến bear cuối trước CHoCH) → vào lệnh.
+                SL dưới đáy nến sweep. <strong style="color:#e8ecf5">Model phổ biến nhất, R:R tốt nhất.</strong><br>
+                <em style="color:#4a5169; font-size:12px;">Lưu ý: 5M OB dùng body nến, còn 1H OB dùng toàn bộ nến (body+wick).</em>
+              </p>
+            </div>
+            <div class="info-box bull" style="margin-bottom:12px; padding:14px 18px;">
+              <div class="ib-label">Model B — OB Bounce trực tiếp (không cần CHoCH)</div>
+              <p style="margin:0; color:var(--text-dim); font-size:13px;">
+                Đặt limit order tại 1H OB. Khi giá chạm OB có pin bar hoặc engulfing trên 1H → vào lệnh ngay.
+                SL dưới toàn bộ OB (body+wick). <strong style="color:#e8ecf5">Đơn giản nhất, phù hợp người mới.</strong>
+              </p>
+            </div>
+            <div class="info-box bull" style="padding:14px 18px;">
+              <div class="ib-label">Model C — FVG Fill sau CHoCH</div>
+              <p style="margin:0; color:var(--text-dim); font-size:13px;">
+                Sau CHoCH, nến impulse để lại FVG trên 5M → đặt limit tại FVG, chờ pullback lấp rồi bật.
+                SL dưới đáy FVG. <strong style="color:#e8ecf5">SL nhỏ nhất, R:R cao nhất.</strong>
+              </p>
+            </div>
+
+            <h4 style="margin:20px 0 12px; font-size:14px; color:#00d4a8;">SL &amp; TP</h4>
+            <ul class="checklist">
+              <li><strong>SL (Model A &amp; C):</strong> Dưới đáy nến sweep (low thấp nhất của toàn bộ cú quét). Thêm 3–5 pip buffer.</li>
+              <li><strong>SL (Model B):</strong> Dưới toàn bộ OB 1H (bao gồm wick thấp nhất). Thêm 3–5 pip buffer.</li>
+              <li><strong>TP1:</strong> BSL/SSL đối diện gần nhất → chốt 50% vị thế.</li>
+              <li><strong>TP2:</strong> Liquidity xa hơn hoặc HTF POI tiếp theo → giữ 50% còn lại.</li>
+              <li><strong>Breakeven:</strong> Khi đạt 1R, dời SL về giá vào lệnh.</li>
+            </ul>
+
+            <div class="info-box bull" style="margin-top:16px; padding:14px 18px;">
+              <div class="ib-label">Checklist 5 điểm — trước khi bấm nút</div>
+              <p style="margin:0; color:var(--text); font-size:13px; line-height:1.9;">
+                ① Bias xác định (Step 1) — bull hay bear?<br>
+                ② Đang trong London/NY Killzone (Step 2)?<br>
+                ③ Giá chạm OB + có Liquidity Sweep (Step 2)?<br>
+                ④ 5M CHoCH xác nhận hướng (Step 3)?<br>
+                ⑤ R:R ≥ 1:2 và SL đặt đúng vị trí?<br>
+                <strong style="color:#ff3b6b;">Thiếu 1 trong 5 → không bấm.</strong>
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <div class="chart-card" style="margin:0;">
+              <div class="chart-header">
+                <span class="chart-title">5M — CHoCH Entry (Model A)</span>
+                <span class="chart-tag">FIG. 5.1c</span>
+              </div>
+              <div class="chart-body" style="min-height:280px; padding:16px;">
+                <svg viewBox="0 0 320 270" xmlns="http://www.w3.org/2000/svg">
+                  <!-- TP line -->
+                  <line x1="0" y1="15" x2="320" y2="15" stroke="#00d4a8" stroke-width="1" stroke-dasharray="5 3"/>
+                  <text x="4" y="11" fill="#00d4a8" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">TP — BSL</text>
+
+                  <!-- 1H OB zone: y=175–220 -->
+                  <rect x="0" y="175" width="320" height="45" fill="#4a9eff" opacity="0.08"/>
+                  <line x1="0" y1="175" x2="320" y2="175" stroke="#4a9eff" stroke-width="1" stroke-dasharray="4 3"/>
+                  <line x1="0" y1="220" x2="320" y2="220" stroke="#4a9eff" stroke-width="1" stroke-dasharray="4 3"/>
+                  <text x="4" y="187" fill="#4a9eff" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">1H OB</text>
+
+                  <!-- SL line: dưới sweep low y=245, đặt y=255 -->
+                  <line x1="0" y1="255" x2="320" y2="255" stroke="#ff3b6b" stroke-width="1.2"/>
+                  <text x="4" y="265" fill="#ff3b6b" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">SL — dưới sweep low</text>
+
+                  <!-- === 4 NẾN GIẢM VÀO 1H OB === -->
+                  <line x1="15" y1="55"  x2="15"  y2="90"  stroke="#ff3b6b" stroke-width="1.2"/><rect x="10"  y="62"  width="10" height="22" fill="#ff3b6b"/>
+                  <line x1="35" y1="72"  x2="35"  y2="110" stroke="#ff3b6b" stroke-width="1.2"/><rect x="30"  y="80"  width="10" height="22" fill="#ff3b6b"/>
+                  <line x1="55" y1="95"  x2="55"  y2="132" stroke="#ff3b6b" stroke-width="1.2"/><rect x="50"  y="103" width="10" height="22" fill="#ff3b6b"/>
+                  <!-- nến giảm cuối — high của nó = CHoCH level -->
+                  <line x1="75" y1="118" x2="75"  y2="158" stroke="#ff3b6b" stroke-width="1.2"/><rect x="70"  y="126" width="10" height="24" fill="#ff3b6b"/>
+
+                  <!-- CHoCH level = HIGH nến giảm cuối = y=118 -->
+                  <line x1="75" y1="118" x2="220" y2="118" stroke="#ffb547" stroke-width="1" stroke-dasharray="4 3"/>
+                  <text x="222" y="115" fill="#ffb547" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">CHoCH level</text>
+
+                  <!-- === SSL SWEEP: wick đâm xuống y=245, body trong 1H OB === -->
+                  <line x1="95" y1="160" x2="95"  y2="245" stroke="#ff3b6b" stroke-width="1.8"/>
+                  <rect x="90"  y="172" width="10" height="36" fill="#ff3b6b"/>
+                  <circle cx="95" cy="245" r="4" fill="none" stroke="#ff3b6b" stroke-width="1.8"/>
+                  <text x="108" y="248" fill="#ff3b6b" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">SWEEP</text>
+
+                  <!-- === 2 NẾN BULL ĐẦU (chưa vượt CHoCH level) === -->
+                  <line x1="115" y1="155" x2="115" y2="208" stroke="#00d4a8" stroke-width="1.5"/><rect x="110" y="160" width="10" height="42" fill="#00d4a8"/>
+                  <line x1="135" y1="132" x2="135" y2="168" stroke="#00d4a8" stroke-width="1.5"/><rect x="130" y="136" width="10" height="28" fill="#00d4a8"/>
+
+                  <!-- === NẾN BEAR PULLBACK NGẮN (tạo 5M OB) === -->
+                  <!-- body: y=140–158, wick: y=136–162 -->
+                  <line x1="155" y1="136" x2="155" y2="162" stroke="#ff3b6b" stroke-width="1.2"/><rect x="150" y="140" width="10" height="18" fill="#ff3b6b"/>
+
+                  <!-- 5M OB = body nến bear pullback: y=140–158 -->
+                  <rect x="148" y="140" width="60" height="18" fill="#ffb547" opacity="0.3"/>
+                  <line x1="148" y1="140" x2="320" y2="140" stroke="#ffb547" stroke-width="0.8" stroke-dasharray="3 2"/>
+                  <line x1="148" y1="158" x2="320" y2="158" stroke="#ffb547" stroke-width="0.8" stroke-dasharray="3 2"/>
+                  <text x="212" y="152" fill="#ffb547" font-family="JetBrains Mono,monospace" font-size="7" font-weight="700">5M OB</text>
+
+                  <!-- === NẾN CHoCH: đóng cửa VƯỢT CHoCH level (y=118) === -->
+                  <line x1="175" y1="105" x2="175" y2="158" stroke="#00d4a8" stroke-width="2"/>
+                  <rect x="170" y="108" width="10" height="42" fill="#00d4a8"/>
+                  <text x="188" y="112" fill="#00d4a8" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">CHoCH!</text>
+                  <!-- CHoCH close = y=108, vượt qua level y=118 ✓ -->
+
+                  <!-- === PULLBACK VÀO 5M OB === -->
+                  <!-- Nến giảm pullback: từ y=112 xuống y=155, chạm vào 5M OB (y=140–158) -->
+                  <line x1="195" y1="108" x2="195" y2="158" stroke="#ff3b6b" stroke-width="1.2"/><rect x="190" y="115" width="10" height="36" fill="#ff3b6b"/>
+                  <!-- wick chạm y=158 = đáy 5M OB -->
+
+                  <!-- === ENTRY: nến bull bật lên từ 5M OB === -->
+                  <!-- open=y=150 (trong OB), close=y=88, wick dưới y=155 -->
+                  <line x1="215" y1="85" x2="215" y2="155" stroke="#00d4a8" stroke-width="2"/>
+                  <rect x="210" y="88" width="10" height="58" fill="#00d4a8"/>
+                  <!-- Entry marker ở ĐÁY nến = nơi giá chạm OB và bắt đầu bật -->
+                  <circle cx="215" cy="153" r="6" fill="none" stroke="#00d4a8" stroke-width="2"/>
+                  <text x="226" y="160" fill="#00d4a8" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">ENTRY</text>
+
+                  <!-- === NẾN TĂNG ĐẾN TP === -->
+                  <line x1="235" y1="62"  x2="235" y2="92"  stroke="#00d4a8" stroke-width="1.5"/><rect x="230" y="67"  width="10" height="22" fill="#00d4a8"/>
+                  <line x1="255" y1="40"  x2="255" y2="68"  stroke="#00d4a8" stroke-width="1.5"/><rect x="250" y="45"  width="10" height="20" fill="#00d4a8"/>
+                  <polyline points="265,36 285,24 305,15" fill="none" stroke="#00d4a8" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
+                </svg>
+              </div>
+              <div class="chart-caption">Sweep → CHoCH (đóng trên swing high) → pullback vào 5M OB → ENTRY → SL dưới sweep → TP tại BSL</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== 5.2 ENTRY MODEL FIG ======== -->
+    <h3>5.2 Entry Model — Full Setup</h3>
+    <p>Tổng hợp 3 step vào một setup hoàn chỉnh. Mainstream SMC cần 3 yếu tố hội tụ: <strong>1H OB trong Discount + Liquidity Sweep + 5M CHoCH.</strong></p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">A+ Long Setup — Mainstream SMC</span>
+        <span class="chart-tag">FIG. 5.2 — FULL SETUP</span>
+      </div>
+      <div style="background: var(--panel); padding: 32px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+        <div>
+          <svg viewBox="0 0 260 360" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:260px;">
+            <!-- TP -->
+            <line x1="10" y1="25" x2="250" y2="25" stroke="#00d4a8" stroke-width="1.5" stroke-dasharray="6 3"/>
+            <text x="14" y="20" fill="#00d4a8" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">TP — BSL</text>
+
+            <!-- 1H OB zone (toàn bộ nến: high→low) -->
+            <rect x="10" y="195" width="240" height="55" fill="#4a9eff" opacity="0.1"/>
+            <line x1="10" y1="195" x2="250" y2="195" stroke="#4a9eff" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <line x1="10" y1="250" x2="250" y2="250" stroke="#4a9eff" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <text x="14" y="210" fill="#4a9eff" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">1H OB (body+wick)</text>
+
+            <!-- SL line (dưới sweep low) -->
+            <line x1="10" y1="305" x2="250" y2="305" stroke="#ff3b6b" stroke-width="1.5"/>
+            <text x="14" y="320" fill="#ff3b6b" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700">SL — dưới sweep</text>
+
+            <!-- Nến bear giảm vào OB -->
+            <line x1="28"  y1="68"  x2="28"  y2="105" stroke="#ff3b6b" stroke-width="1.2"/><rect x="23"  y="76"  width="10" height="22" fill="#ff3b6b"/>
+            <line x1="48"  y1="88"  x2="48"  y2="128" stroke="#ff3b6b" stroke-width="1.2"/><rect x="43"  y="96"  width="10" height="24" fill="#ff3b6b"/>
+            <line x1="68"  y1="112" x2="68"  y2="152" stroke="#ff3b6b" stroke-width="1.2"/><rect x="63"  y="120" width="10" height="25" fill="#ff3b6b"/>
+            <line x1="88"  y1="138" x2="88"  y2="178" stroke="#ff3b6b" stroke-width="1.2"/><rect x="83"  y="146" width="10" height="25" fill="#ff3b6b"/>
+            <line x1="108" y1="165" x2="108" y2="210" stroke="#ff3b6b" stroke-width="1.2"/><rect x="103" y="173" width="10" height="28" fill="#ff3b6b"/>
+
+            <!-- Nến sweep: wick đâm xuống dưới OB bottom, đóng trong OB -->
+            <line x1="128" y1="192" x2="128" y2="300" stroke="#ff3b6b" stroke-width="1.8"/>
+            <rect x="123" y="204" width="10" height="36" fill="#ff3b6b"/>
+            <circle cx="128" cy="300" r="5" fill="none" stroke="#ff3b6b" stroke-width="1.8"/>
+
+            <!-- Bull reversal 1 -->
+            <line x1="148" y1="188" x2="148" y2="242" stroke="#00d4a8" stroke-width="1.5"/>
+            <rect x="143" y="192" width="10" height="42" fill="#00d4a8"/>
+
+            <!-- 5M swing high = y=192 (top nến bull 1) -->
+            <line x1="148" y1="192" x2="195" y2="192" stroke="#ffb547" stroke-width="0.8" stroke-dasharray="3 2"/>
+
+            <!-- Bull 2 -->
+            <line x1="165" y1="198" x2="165" y2="232" stroke="#00d4a8" stroke-width="1.2"/>
+            <rect x="160" y="203" width="10" height="22" fill="#00d4a8"/>
+
+            <!-- Bear pullback -->
+            <line x1="182" y1="202" x2="182" y2="225" stroke="#ff3b6b" stroke-width="1.2"/>
+            <rect x="177" y="206" width="10" height="16" fill="#ff3b6b"/>
+
+            <!-- CHoCH candle: đóng TRÊN swing high (y=192) -->
+            <line x1="199" y1="178" x2="199" y2="232" stroke="#00d4a8" stroke-width="2"/>
+            <rect x="194" y="182" width="10" height="42" fill="#00d4a8"/>
+
+            <!-- 5M OB = body nến bear pullback -->
+            <rect x="175" y="202" width="46" height="22" fill="#ffb547" opacity="0.25"/>
+            <line x1="175" y1="202" x2="250" y2="202" stroke="#ffb547" stroke-width="0.8" stroke-dasharray="3 2"/>
+            <line x1="175" y1="224" x2="250" y2="224" stroke="#ffb547" stroke-width="0.8" stroke-dasharray="3 2"/>
+
+            <!-- Pullback vào OB -->
+            <line x1="218" y1="194" x2="218" y2="224" stroke="#ff3b6b" stroke-width="1.2"/>
+            <rect x="213" y="200" width="10" height="18" fill="#ff3b6b"/>
+
+            <!-- ENTRY candle -->
+            <line x1="236" y1="168" x2="236" y2="224" stroke="#00d4a8" stroke-width="2"/>
+            <rect x="231" y="174" width="10" height="42" fill="#00d4a8"/>
+            <circle cx="236" cy="218" r="7" fill="none" stroke="#00d4a8" stroke-width="2"/>
+
+            <!-- Move to TP (dashed) -->
+            <polyline points="241,168 245,120 248,60" fill="none" stroke="#00d4a8" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5"/>
+          </svg>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div style="border-left: 3px solid #4a9eff; padding: 12px 16px; background: rgba(74,158,255,0.05);">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#4a9eff; letter-spacing:0.15em; margin-bottom:8px;">STEP 1 — 1H BULLISH OB</div>
+            <div style="font-size:13px; color:#8a93a8;">Bias bullish. 1H OB nằm trong Discount — lấy <strong style="color:#e8ecf5">toàn bộ nến (high đến low)</strong>. Đây là vùng giá đang pullback về.</div>
+          </div>
+
+          <div style="border-left: 3px solid #ff3b6b; padding: 12px 16px; background: rgba(255,59,107,0.05);">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#ff3b6b; letter-spacing:0.15em; margin-bottom:8px;">STEP 2 — SSL SWEEP</div>
+            <div style="font-size:13px; color:#8a93a8;">Wick đâm xuyên qua SSL (đáy gần nhất dưới OB), kích hoạt stop loss của long traders, sau đó đóng cửa lại <strong style="color:#e8ecf5">trong OB</strong>. Đây là dấu hiệu quan trọng nhất.</div>
+          </div>
+
+          <div style="border-left: 3px solid #ffb547; padding: 12px 16px; background: rgba(255,181,71,0.05);">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#ffb547; letter-spacing:0.15em; margin-bottom:8px;">STEP 3 — 5M CHoCH</div>
+            <div style="font-size:13px; color:#8a93a8;">Nến 5M đóng cửa <strong style="color:#e8ecf5">vượt qua swing high gần nhất</strong> → CHoCH xác nhận đảo chiều. Sau đó giá pullback vào 5M OB (body nến bear cuối) → entry.</div>
+          </div>
+
+          <div style="border-left: 3px solid #00d4a8; padding: 12px 16px; background: rgba(0,212,168,0.08);">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#00d4a8; letter-spacing:0.15em; margin-bottom:8px;">ENTRY + SL + TP</div>
+            <div style="font-size:13px; color:#8a93a8;">
+              <strong style="color:#e8ecf5">ENTRY:</strong> nến chạm 5M OB và bật lên<br>
+              <strong style="color:#ff3b6b">SL:</strong> dưới đáy nến sweep (sweep low) + 3–5 pip<br>
+              <strong style="color:#00d4a8">TP1:</strong> BSL gần nhất — chốt 50%<br>
+              <strong style="color:#00d4a8">TP2:</strong> Liquidity xa hơn — giữ 50%
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-caption">FIG 5.2 — Mainstream SMC A+ Setup: 1H OB + SSL Sweep + 5M CHoCH = 3 điều kiện hội tụ</div>
+    </div>
+
+    <!-- ======== 5.3 QUẢN LÝ VỐN ======== -->
+    <h3>5.3 Quản lý vốn &amp; rủi ro</h3>
+    <table class="def-table">
+      <tr><th>Yếu tố</th><th>Quy tắc</th></tr>
+      <tr><td>RISK/TRADE</td><td>Tối đa 1–2% tài khoản mỗi lệnh. Không bao giờ vượt quá 2%.</td></tr>
+      <tr><td>R:R MIN</td><td>1:2 trở lên — dưới mức này thì skip setup, không trade.</td></tr>
+      <tr><td>SL — Model A/C</td><td>Dưới đáy nến sweep (sweep low). Thêm 3–5 pip buffer. Không dùng pip cố định.</td></tr>
+      <tr><td>SL — Model B</td><td>Dưới toàn bộ OB 1H (bao gồm wick thấp nhất). Thêm 3–5 pip buffer.</td></tr>
+      <tr><td>TP</td><td>TP1 tại BSL/SSL đối diện gần nhất (chốt 50%). TP2 tại liquidity xa hơn (giữ 50%).</td></tr>
+      <tr><td>MAX DD/DAY</td><td>Thua 3% trong ngày → dừng giao dịch, đóng chart.</td></tr>
+      <tr><td>MAX DD/WEEK</td><td>Thua 5–6% trong tuần → dừng, review lại toàn bộ setup tuần đó.</td></tr>
+    </table>
+
+    <div class="info-box">
+      <div class="ib-label">Nguyên tắc quan trọng nhất</div>
+      <p style="margin:0; color:var(--text);">
+        Mainstream SMC <strong>không phải hệ thống win rate cao</strong> — win rate 45–55% là bình thường.
+        Điều làm nên lợi nhuận là <strong>R:R nhất quán ≥ 1:2</strong> và <strong>kỷ luật không vào lệnh khi thiếu điều kiện</strong>.
+        10 lệnh win rate 50% với R:R 1:2 = +5R lợi nhuận. Đơn giản vậy thôi.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PHASE 6 ============ -->
+<section class="phase" id="g6">
+  <div class="container">
+    <div class="phase-header">
+      <div class="phase-num">PHASE 06<span class="duration">LIÊN TỤC</span></div>
+      <div>
+        <h2>Thực hành <em>&amp; Backtest</em></h2>
+        <p class="phase-desc">
+          Phần lớn người học SMC thất bại không phải vì thiếu kiến thức — mà vì thiếu giờ bay.
+          Đây là giai đoạn dài nhất, nhàm chán nhất, và quan trọng nhất.
+        </p>
+      </div>
+    </div>
+
+    <h3>6.1 Backtest có hệ thống</h3>
+    <p>
+      Backtest không phải là "xem chart cũ và tự khen mình giỏi". Backtest đúng nghĩa là
+      tái hiện điều kiện thật và ghi chép từng setup theo đúng quy tắc của hệ thống bạn.
+    </p>
+    <ul class="checklist">
+      <li><strong>Mục tiêu:</strong> Tối thiểu 100–200 setup theo đúng hệ thống trước khi đánh demo</li>
+      <li><strong>Công cụ:</strong> TradingView replay mode, hoặc phần mềm Forex Tester</li>
+      <li><strong>Ghi chép:</strong> Screenshot từng lệnh + lý do entry + kết quả</li>
+      <li><strong>Đo lường:</strong> Win rate, R:R trung bình, max consecutive losses</li>
+    </ul>
+
+    <h3>6.2 Trading Journal — vũ khí bí mật</h3>
+    <p>
+      Người không ghi journal = người không cải thiện. Mỗi lệnh phải có ít nhất 4 thông tin:
+      <strong>screenshot trước khi vào</strong>, <strong>lý do vào lệnh</strong>,
+      <strong>cảm xúc khi vào</strong>, <strong>kết quả + bài học</strong>.
+    </p>
+
+    <table class="def-table">
+      <tr><th>Cột journal</th><th>Nội dung</th></tr>
+      <tr><td>DATE / PAIR</td><td>Ngày, cặp giao dịch, khung thời gian</td></tr>
+      <tr><td>SETUP TYPE</td><td>OB mitigation / FVG fill / Liquidity sweep / OTE…</td></tr>
+      <tr><td>HTF BIAS</td><td>Bullish / Bearish / Range — từ Daily/4H</td></tr>
+      <tr><td>ENTRY REASON</td><td>3 lý do hội tụ tối thiểu</td></tr>
+      <tr><td>R:R PLAN</td><td>Kế hoạch SL, TP cụ thể</td></tr>
+      <tr><td>EMOTION</td><td>Tự tin / FOMO / sợ / cờ bạc — đánh giá thật lòng</td></tr>
+      <tr><td>RESULT</td><td>+R hoặc -R, có theo plan không</td></tr>
+      <tr><td>LESSON</td><td>Học được gì, sửa gì lần sau</td></tr>
+    </table>
+
+    <h3>6.3 Lộ trình Demo → Live</h3>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Progression Path</span>
+        <span class="chart-tag">FIG. 6.1 — TIMELINE</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg">
+          <!-- timeline -->
+          <line x1="60" y1="120" x2="640" y2="120" stroke="#1f2940" stroke-width="2"/>
+
+          <!-- Stage 1 -->
+          <circle cx="100" cy="120" r="14" fill="#a78bfa"/>
+          <text x="100" y="125" text-anchor="middle" fill="#0a0e1a" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">1</text>
+          <text x="100" y="80" text-anchor="middle" fill="#a78bfa" class="label-mono" font-weight="700">BACKTEST</text>
+          <text x="100" y="160" text-anchor="middle" fill="#8a93a8" class="label-mono">2–3 tháng</text>
+          <text x="100" y="178" text-anchor="middle" fill="#8a93a8" class="label-mono">200+ setups</text>
+
+          <!-- Stage 2 -->
+          <circle cx="240" cy="120" r="14" fill="#4a9eff"/>
+          <text x="240" y="125" text-anchor="middle" fill="#0a0e1a" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">2</text>
+          <text x="240" y="80" text-anchor="middle" fill="#4a9eff" class="label-mono" font-weight="700">DEMO</text>
+          <text x="240" y="160" text-anchor="middle" fill="#8a93a8" class="label-mono">3 tháng+</text>
+          <text x="240" y="178" text-anchor="middle" fill="#8a93a8" class="label-mono">đến WR ổn định</text>
+
+          <!-- Stage 3 -->
+          <circle cx="380" cy="120" r="14" fill="#ffb547"/>
+          <text x="380" y="125" text-anchor="middle" fill="#0a0e1a" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">3</text>
+          <text x="380" y="80" text-anchor="middle" fill="#ffb547" class="label-mono" font-weight="700">SMALL LIVE</text>
+          <text x="380" y="160" text-anchor="middle" fill="#8a93a8" class="label-mono">3–6 tháng</text>
+          <text x="380" y="178" text-anchor="middle" fill="#8a93a8" class="label-mono">$100–500</text>
+
+          <!-- Stage 4 -->
+          <circle cx="520" cy="120" r="14" fill="#00d4a8"/>
+          <text x="520" y="125" text-anchor="middle" fill="#0a0e1a" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">4</text>
+          <text x="520" y="80" text-anchor="middle" fill="#00d4a8" class="label-mono" font-weight="700">SCALE UP</text>
+          <text x="520" y="160" text-anchor="middle" fill="#8a93a8" class="label-mono">khi profit ổn định</text>
+          <text x="520" y="178" text-anchor="middle" fill="#8a93a8" class="label-mono">prop firm / live lớn</text>
+
+          <!-- Stage end -->
+          <circle cx="620" cy="120" r="6" fill="#00d4a8" stroke="#0a0e1a" stroke-width="2"/>
+          <text x="620" y="100" text-anchor="middle" fill="#00d4a8" class="label-mono" font-weight="700">PRO</text>
+
+          <text x="350" y="220" text-anchor="middle" fill="#8a93a8" class="label-mono">KHÔNG NHẢY GIAI ĐOẠN — MỖI BƯỚC ĐỀU CÓ BÀI HỌC RIÊNG</text>
+        </svg>
+      </div>
+      <div class="chart-caption">FIG 6.1 — Đốt cháy giai đoạn = đốt cháy tài khoản. Mỗi bước cần thời gian tích lũy</div>
+    </div>
+
+    <h3>6.4 Tâm lý &amp; thói quen của trader thành công</h3>
+    <ul class="checklist">
+      <li><strong>Chấp nhận thua:</strong> Win rate 50% với R:R 1:3 vẫn cực kỳ lợi nhuận</li>
+      <li><strong>Không revenge trade:</strong> Sau 2 lệnh thua liên tiếp → off chart, đi bộ 30 phút</li>
+      <li><strong>Quy tắc 1 setup/ngày:</strong> Người mới chỉ nên vào tối đa 1–2 lệnh/ngày</li>
+      <li><strong>Review hàng tuần:</strong> Mỗi Chủ Nhật review 5 lệnh tệ nhất tuần</li>
+      <li><strong>Không xem chart liên tục:</strong> Setup chất lượng đến với bạn, không phải bạn đuổi theo</li>
+    </ul>
+
+    <div class="info-box bull">
+      <div class="ib-label">Sự thật khó nuốt</div>
+      <p style="margin:0;color:var(--text);">
+        Phần lớn trader bỏ cuộc trong giai đoạn này vì <strong>quá chán</strong>.
+        Backtest 200 setup nhàm chán hơn xem một bộ phim. Nhưng đây chính là điều phân biệt
+        người kiếm tiền lâu dài với người đốt tài khoản. <em>Boredom is a feature, not a bug.</em>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container">
+    <p class="quote">
+      "The market is designed to fool the most amount of people, the most amount of time."
+    </p>
+    <p>— ICT · END OF ROADMAP · 2026 —</p>
+  </div>
+</footer>
+
+</body>
+</html>
